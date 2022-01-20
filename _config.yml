@@ -103,3 +103,6 @@ theme: polk
 ## Docs: https://hexo.io/docs/one-command-deployment
 deploy:
   type: 'git'
+  repository: git@github.com:guoweikai/blog.git
+   branch: master
+  
