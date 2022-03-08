@@ -75,9 +75,83 @@ instanceof 可以正确判断对象的类型，其内部运行机制是判断在
     console.log(({}).constructor === Object) //true
 ```
 
-constructor 有两个作用，一个是判断数据的类型，
+constructor 有两个作用，一个是判断数据的类型，二是对象实例通过 constrcutor 对象访问它的构造函数。 需要注意， 如果创建一个对象来改变它的原型， constructor 就不能用来判断数据类型了
+
+4. Object.prototype.toString.call()
+
+```js
+    var a = Object.prototype.toString;
+    console.log(a.call(2));
+    console.log(a.call(true));
+    console.log(a.call([]));
+    console.log(a.call(function(){}));
+    console.log(a.call(undefined));
+    console.log(a.call(null));
+```
+   
+同样是检测对象 obj 调用 toString 方法， obj.toString 的结果和  Objec.prototype.toString.call(obj)的结果不一样，这是为什么？
+这是因为 toString 是 Object 的原型方法， 而 Array 和 function 等类型作为 Object 的实例， 都重写了 toString 方法， 不同的对象类型
+调用 toString方法时，根据原型链的知识，调用的是对应的重写之后的 toString 方法，(function 类型返回内容为函数体的字符串，Array 类型返回元素组成的字符串),
+而不会去调用 Object 上原型toString 方法（返回对象的具体类型）， 所有采用 obj.toString() 不能得到其对象类型，只能将 obj 转换为字符串类型，因此，在想要得到对象的具体类型时，应该调用 Object 原型上的 toString 方法
+
+### 判断数组的方式由哪些
+
+通过 Object.prototype.toString.call()⬅️判断
+
+通过原型链做判断
+
+obj.__proto__ === Array.prototype 
+
+通过 es6 的 Array.isArray() 做判断
+
+Array.isArray(obj)
+
+通过 instanceof 做判断
+
+obj instanceof Array
+
+通过 Array.prototype.isPrototypeof
+
+```js
+    Array.prototype.isPrototypeOf(obj) ? 这个稍后梳理一下
+```
+
+### null 和 undefined 区别
+首先 null 和 undefined 都是基本数据类型，这两个基本数据类型分别都只有一个值，就是 null 和 undefined 
+
+undefined 代表的含义是未定义， null 代表的含义是空对象， 一般变量声明了但还没有定义的时候会返回undefined， null 主要用于复制给 一些可能会返回对象的变量，作为初始化
+
+undefined 在 js 中不是一个保留字，这意味着可以使用 undefined 来作为一个变量名， 但是这样的做法是非常危险的， 它会影响对 undefined 值的判断， 我们可以通过一些方法获取安全的 undefinded值， 比如 void 0
+
+当对这两种类型使用typeof 进行判断时。 Null类型会返回"object",这是一个历史遗留的问题， 当使用双等号对两种类型的值进行比较时会返回 true， 使用三个等号时会返回false
+
+### typeof null 的结果是什么， 为什么？
+
+typeof null 的结果是 Object
+
+在 JS 第一版本中，所有值都存储在 32 位的单元中，每个单元包含一个小的 类型标签（1-3 bits） 以及当前要存储值的真实数据. 类型标签存储在每个单元的低位中，共有五种数据类型
+
+    ```JS
+        000:object  当前存储的数据指向一个对象
+        1:init - 当前存储的数据是一个 31 位的有符号整数
+        010: double - 当前存储的数据指向一个双进度的浮点数
+        100: string - 当前存储的数据指向一个字符串
+        110: boolean - 当前存储的数据是布尔值
+    ```
+
+### instanceof 操作符的实现原理
+    instanceof 运算符用于判断构造函数的prototype属性是否出现在对象的原型链中的
+    ```js
+    ```
+
+### isNaN 和 Number.isNaN 函数的区别
 
 
+
+###  什么是 js 中的包装类型
+
+    在 js 中， 基本类型是没有属性和方法的， 但是为了便于操作基本类型的值，在调用基本类型的属性或方法时 js 会在后台隐式地将
+函数 isNaN
 # ES6
 1. let const var 的区别
    块级作用域： 块级作用域由 {} 包括，let 和 const 具有块级作用域，var 不存在块级作用域，块级作用域解决了es5 中的两个问题
