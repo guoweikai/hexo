@@ -250,6 +250,13 @@ console.log(outObj)
 
 
 # JavaScript 基础
+
+
+
+
+
+
+
 # 相关问题 
 
 1. js中栈和堆的概念和区别？[链接地址](https://juejin.cn/post/6854573215327617031)
