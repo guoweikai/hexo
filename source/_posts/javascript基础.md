@@ -138,13 +138,34 @@ typeof null 的结果是 Object
         100: string - 当前存储的数据指向一个字符串
         110: boolean - 当前存储的数据是布尔值
     ```
+    如果最低位是1， 则类型标签标志位的长度只有一位； 如果最地位是 0， 则类型标签标志位的长度占三位， 为存储其他四种数据类型提供了额外两个 bit 的长度
+    有两种特殊数据类型：
+* undefined 的值是 （-2）30（一个超出整数范围的数字）；
+* null 的值是机器码 null 指针（null指针的值全是 0）；
+  
+那也就是说 null 的类型标签也是 000， 和Object 的类型标签一样，所以会被判定为 object
 
 ### instanceof 操作符的实现原理
     instanceof 运算符用于判断构造函数的prototype属性是否出现在对象的原型链中的
-    ```js
+
+    ```JS
+     function myInstanceof（left，right）{
+        //  获取对象的原型
+         let proto = Object.getPrototypeOf(left);
+        // 获取构造函数的 prototype 对象
+         let prototype = right.prototype;
+         while(true){
+             if(!proto) return false;
+             if(proto === prototype) return true;
+             proto = Object.getPrototypeOf(proto)
+         }  
+     }
     ```
+### 为什么 0.1+0.2 ！== 0.3 如何让其相等
+
 
 ### isNaN 和 Number.isNaN 函数的区别
+
 
 
 
@@ -152,8 +173,13 @@ typeof null 的结果是 Object
 
     在 js 中， 基本类型是没有属性和方法的， 但是为了便于操作基本类型的值，在调用基本类型的属性或方法时 js 会在后台隐式地将
 函数 isNaN
+
+
+<hr>
+
 # ES6
-1. let const var 的区别
+
+   ### let const var 的区别
    块级作用域： 块级作用域由 {} 包括，let 和 const 具有块级作用域，var 不存在块级作用域，块级作用域解决了es5 中的两个问题
 
    内存变量可能覆盖外层变量
