@@ -31,4 +31,42 @@ tags:
 
 注意事项
 * ！important声明的样式的优先级最高
-* 如果优先级相同， 则最后出现的样式生效
+* 如果优先级相同， 则最后出现的样式生效;
+* 继承得到的样式优先级最低
+* 通用选择器（*），子选择器（>）和相邻同胞选择器（+）并不再这四个等级中，所以它们的权限值为 0
+* 样式表的来源不同时，优先级顺讯为： 内联样式> 内部样式> 外部样式 > 浏览器用户自定义样式 > 浏览器默认样式
+  
+2. CSS 中可继承与不可继承属性有哪些
+一， 无继承性的属性
+1. display: 规定元素因该生成的框的类型
+2. 文本属性: 
+   * vertical-align: 垂直文本对齐
+   * text- decoration: 规定添加到文本的装饰
+   * text-shadow: 文本阴影效果
+   * white-space: 空白符的处理
+   * unicode-bidi:设置文本的方向
+3. 盒子模型的属性: width height margin border padding
+4. 背景属性: background  background-color background-image backgroup-repeat backgroupd-position background- attachment
+5. 定位属性：float clear position top right bottom left min-width min-height
+6. 生成内容属性：content、counter-reset、counter-increment
+7. 轮廓样式属性：outline-style、outline-width、outline-color、outline
+8. 页面样式属性：size、page-break-before、page-break-after
+9. 声音样式属性：pause-before、pause-after、pause、cue-before、cue-after、cue、play-during
+ 
+ 有些还不知道是干什么的
+
+二、 有继承的属性
+
+1. 字体系列属性
+    font-family: 字体系列
+    font-weight： 字体的粗细
+    font-size： 字体的大小
+    font-style: 字体的风格
+2. 文本系列属性
+   text-indent: 文本缩进
+   text-align: 文本水平对齐
+   line-heiht： 行高
+   word-spacing:单词之间的间距
+   letter-spacing:中文或者字母之间的间距
+   text-transform:控制文本大小写
+   color:文本颜色
