@@ -1,5 +1,5 @@
 ---
-title: javascript数据结构
+title: javascript数据类型
 date: 2022-03-10 11:21:26
 tags:
 ---
