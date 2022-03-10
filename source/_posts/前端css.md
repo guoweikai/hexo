@@ -78,7 +78,7 @@ tags:
  * list-style:列表风格，包括 list-style-type、list-style-image等
 5. 光标属性
    cursor :光标显示为何种形态
- ### display 的属性值及其作用
+ ### 3. display 的属性值及其作用
 
  | 属性 | 作用 |
  | ---- | ---- |
@@ -89,5 +89,8 @@ tags:
  | list-item | 像块类型元素一样显示，并添加样式列表标记
  | table  | 此元素会作为块级表格来显示
  | inherit | 绑定应该从父元素继承 display 属性的值
+
+### 
+
 
  # 页面布局
