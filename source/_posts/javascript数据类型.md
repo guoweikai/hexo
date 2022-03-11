@@ -213,13 +213,47 @@ NaN 是一个特殊值，它和自身不相等， 是唯一一个非自饭  NaN 
 ### 15 || 和 && 操作符的返回值
 || 和 && 首先会对第一个操作数执行条件判断， 如果其不是布尔值就先强制转化为布尔类型， 然后再执行条件判断
 
+### 16 Objet.is() 与比较操作符 “===“， ”==” 的区别
+* 使用双等号（==） 进行相等判断时，如果两边的类型不一致，则会进行强制类型转化后再进行比较
+* 使用三等号（===）进行相等判断时， 如果两边的类型不一致时， 不会做强制类型转换，直接返回 false
+* 使用 Object.is 来进行相等判断时，它处理了一些特殊的情况， 比如 -0 和 +0  不能相等， 两个 NaN 是相等的
+
+### 17 什么是 JavaScript 中的包装类型？
+在 JavaScript 中， 基本类型是没有属性和方法的， 但是为了便于操作基本类型的值，在调用基本类型的属性或方法时JavaScript 会在后台隐式地将基本类型的值转换为对象如
+```js
+    const a = "abc"
+    a.length;//3
+    a.toUpperCase();//"ABC"
+```
+在访问 “abc”.length 时， JavaScript 将 “abc” 在后台转化为 String（“abc”），然后再访问其 length 属性
+
+```js
+    var a = "abc"
+    Object(a) // string{"abc"}
+```
+也可以使用 valueOf 方法将包装类型倒转成基本类型
+```js
+    var a = "abc"
+    var b  = Object(a)
+    var c = b.valueOf()
+```
+看看如下代卖会打印什么：
+
+    ```js
+     var  a = new Boolean(false)
+     if(!a){
+         console.log("Oops")
+     }
+    ```
+答案是什么都不会打印，因为虽然包裹的基本类型是false，但是false被包裹成包装类型后就成了对象，所以其非值为false，所以循环体中的内容不会运行。
 
 ### 18 JavasScript 中如何进行隐式类型转换
+
+首先要介绍 ToPrimitive 方法， 这是 js 
 ### 19 + 操作符什么时候用于字符串的拼接？
 
 ### 20 为什么会有 bigInt 的提案
-
-### 21 Object.assign() 和扩展运算符是深拷贝还是浅拷贝，两者区别
+JavaScript中Number.MAX_SAFE_INTEGER表示最⼤安全数字，计算结果是9007199254740991，即在这个数范围内不会出现精度丢失（⼩数除外）。但是⼀旦超过这个范围，js就会出现计算不准确的情况，这在⼤数计算的时候不得不依靠⼀些第三⽅库进⾏解决，因此官⽅提出了BigInt来解决此问题。### 21 Object.assign() 和扩展运算符是深拷贝还是浅拷贝，两者区别
 
 扩展运算符：
 ```js
@@ -245,6 +279,19 @@ console.log(outObj)
 
 
 
+
+#  问题 
+
+ Object.is(-1,1)
+
+Object.prototype.valueOf()
+
+valueof()方法返回指定对象的原始值
+
+语法：
+object.valueof()
+
+[对象的方法详解](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/entries)
 
 
 
