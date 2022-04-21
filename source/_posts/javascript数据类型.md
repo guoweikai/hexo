@@ -166,6 +166,36 @@ typeof null 的结果是 Object
 
 ### 8. 如何安全的获取 undefined 的值
 
+在看<<你不知道的 JavaScript>> 的时候,看到了这么一段 代码
+
+function foo(){
+    var  a = arguments[0] !== (void 0)? arguments[0]:2
+    return a
+}
+void 0 返回undefined，我们都知道的，但是为什么不直接 arguments[0] !== undefined?查找相关资料后总结如下：
+1.undefined可以被重写
+undefined 在 ES5 中已经是全局对象的一个只读（read-only）属性了，它不能被重写。但是在局部作用域中，还是可以被重写的
+
+(function() {
+  var undefined = 10;
+ 
+  // 10 -- chrome
+  alert(undefined);
+})();
+ 
+(function() {
+  undefined = 10;
+ 
+  // undefined -- chrome
+  alert(undefined);
+})();
+
+为什么选择void 0 作为undefined的替代
+MDN中对void有这么一段说明：
+
+The void operator evaluates the given expression and then returns undefined.
+1
+void 运算符能对给定的表达式进行求值，然后返回 undefined。也就是说，void 后面你随便跟上一个表达式，返回的都是 undefined，如 void (2), void (‘hello’)。并且void是不能被重写的。但为什么是void 0 呢，void 0 是表达式中最短的。用 void 0 代替 undefined 能节省字节。不少 JavaScript 压缩工具在压缩过程中，正是将 undefined 用 void 0 代替掉了。
 ### 9 typeof NaN 的结果是什么？
 
 > NaN 指“不是一个数字”， NaN是一个“警戒值”，用于指出数字类型中的错误情况，即“执行数学运算没有成功，这是失败后返回的结果
