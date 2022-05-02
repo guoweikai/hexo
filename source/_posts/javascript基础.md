@@ -409,3 +409,5 @@ axios.post('url', { data: { /*参数*/ } }).then(callback)
 4. 问题 uri 和 url 的区别
 
 url +urn   =uri
+
+uri 是 url 的超级
