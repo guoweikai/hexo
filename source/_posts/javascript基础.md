@@ -465,11 +465,11 @@ console.log(i); // 11
 ```
 由于遍历时定义的i会变量提升成为一个全局变量，在函数结束之后不会被销毁，所以打印出来11。
 
-18. 什么是尾调用，使用尾调用有什么好处？
+### 18. 什么是尾调用，使用尾调用有什么好处？
    尾调用指的是函数的最后一步调用另一个函数。代码执行是基于执行栈的，所以当在一个函数里调用另一个函数时，会保留当前的执行上下文，然后再新建另外一个执行上下文加入栈中。使用尾调用的话，因为已经是函数的最后一步，所以这时可以不必再保留当前的执行上下文，从而节省了内存，这就是尾调用优化。但是 ES6 的尾调用优化只在严格模式下开启，正常模式是无效的。
    <!-- 可以看一下其他文章 -->
 
-19. ES6模块与CommonJS模块有什么异同？
+### 19. ES6模块与CommonJS模块有什么异同？
 
 ES6 Module和CommonJS模块的区别：
 
@@ -484,19 +484,373 @@ ES6 Module和CommonJS模块的区别：
 
 
 
+### 20. 常见的 dom 操作有哪些?
+
+1）DOM 节点的获取
+DOM 节点的获取的API及使用：
+```js
+    getElementById // 按照 id 查询
+    getElementsByTagName // 按照标签名查询
+    getElementsByClassName // 按照类名查询
+    querySelectorAll // 按照 css 选择器查询
+    // 按照 id 查询
+    var imooc = document.getElementById('imooc') // 查询到 id 为 imooc 的元素
+    // 按照标签名查询
+    var pList = document.getElementsByTagName('p')  // 查询到标签为 p 的集合  类数组对象
+    console.log(divList.length)
+    console.log(divList[0])
+    // 按照类名查询
+    var moocList = document.getElementsByClassName('mooc') // 查询到类名为 mooc 的集合
+    // 按照 css 选择器查询
+    var pList = document.querySelectorAll('.mooc') // 查询到类名为 mooc 的集合
+```
+2）DOM 节点的创建
+
+```js
+// 首先获取父节点
+var container = document.getElementById('container')
+// 创建新节点
+var targetSpan = document.createElement('span')
+// 设置 span 节点的内容
+targetSpan.innerHTML = 'hello world'
+// 把新创建的元素塞进父节点里去
+container.appendChild(targetSpan)
+
+```
+3)DOM 节点的删除
+<!-- 让父元素删除子元素 -->
+
+```js
+// 获取目标元素的父元素
+var container = document.getElementById('container')
+// 获取目标元素
+var targetNode = document.getElementById('title')
+// 删除目标元素
+container.removeChild(targetNode)
+```
+
+
+或者通过子节点数组来完成删除：
+```js
+ //获取目标元素的父元素
+ var container = document.getElementById('container')
+// 获取目标元素
+var targetNode = container.childNodes[1]
+// 删除目标元素
+container.removeChild(targetNode)
+```
+
+修改 DOM 元素这个动作可以分很多维度，比如说移动 DOM 元素的位置，修改 DOM 元素的属性等。
+
+将指定的两个 DOM 元素交换位置， 已知的 HTML 结构如下：
+
+```js
+<html>
+  <head>
+    <title>DEMO</title>
+  </head>
+  <body>
+    <div id="container"> 
+      <h1 id="title">我是标题</h1>
+      <p id="content">我是内容</p>
+    </div>   
+  </body>
+</html>
+```
+现在需要调换 title 和 content 的位置，可以考虑 insertBefore 或者 appendChild：
+
+```js
+// 获取父元素
+var container = document.getElementById('container')   
+ 
+// 获取两个需要被交换的元素
+var title = document.getElementById('title')
+var content = document.getElementById('content')
+// 交换两个元素，把 content 置于 title 前面
+container.insertBefore(content, title)
+
+```
+
+### 21. use strict是什么意思 ? 使用它区别是什么？
+use strict 是一种 ECMAscript5 添加的（严格模式）运行模式，这种模式使得 Javascript 在更严格的条件下运行。设立严格模式的目的如下
+* 消除 Javascript 语法的不合理、不严谨之处，减少怪异行为;
+* 消除代码运行的不安全之处，保证代码运行的安全；
+* 提高编译器效率，增加运行速度；
+* 为未来新版本的 Javascript 做好铺垫。
+
+区别：
+
+* 禁止使用 with 语句。
+* 禁止 this 关键字指向全局对象。
+* 对象不能有重名的属性。
+
+### 22. 如何判断一个对象是否属于某个类？  考察数据类型,在数据类型有详细的说明
+
+instanceof  Object.prototye.toString()
+
+
+### 23. 强类型语言和弱类型语言的区别  类型检查
+
+* 强类型语言：强类型语言也称为强类型定义语言，是一种总是强制类型定义的语言，要求变量的使用要严格符合定义，所有变量都必须先定义后使用。Java和C++等语言都是强制类型定义的，也就是说，一旦一个变量被指定了某个数据类型，如果不经过强制转换，那么它就永远是这个数据类型了。例如你有一个整数，如果不显式地进行转换，你不能将其视为一个字符串。
+
+*  弱类型语言：弱类型语言也称为弱类型定义语言，与强类型定义相反。JavaScript语言就属于弱类型语言。简单理解就是一种变量类型可以被忽略的语言。比如JavaScript是弱类型定义的，在JavaScript中就可以将字符串'12'和整数3进行连接得到字符串'123'，在相加的时候会进行强制类型转换。
+
+两者对比：强类型语言在速度上可能略逊色于弱类型语言，但是强类型语言带来的严谨性可以有效地帮助避免许多错误。
+
+但是强类型语言, 也可以强制进行类型转化
+
+
+### 24. 解释性语言和编译型语言的区别
+
+（1）解释型语言
+使用专门的解释器对源程序逐行解释成特定平台的机器码并立即执行。是代码在执行时才被解释器一行行动态翻译和执行，而不是在执行之前就完成翻译。解释型语言不需要事先编译，其直接将源代码解释成机器码并立即执行，所以只要某一平台提供了相应的解释器即可运行该程序。其特点总结如下
+
+解释型语言每次运行都需要将源代码解释称机器码并执行，效率较低；
+只要平台提供相应的解释器，就可以运行源代码，所以可以方便源程序移植；
+JavaScript、Python等属于解释型语言。
+
+（2）编译型语言
+使用专门的编译器，针对特定的平台，将高级语言源代码一次性的编译成可被该平台硬件执行的机器码，并包装成该平台所能识别的可执行性程序的格式。在编译型语言写的程序执行之前，需要一个专门的编译过程，把源代码编译成机器语言的文件，如exe格式的文件，以后要再运行时，直接使用编译结果即可，如直接运行exe文件。因为只需编译一次，以后运行时不需要编译，所以编译型语言执行效率高。其特点总结如下：
+
+一次性的编译成平台相关的机器语言文件，运行时脱离开发环境，运行效率高；
+与特定平台相关，一般无法移植到其他平台；
+C、C++等属于编译型语言。
+
+两者主要区别在于： 前者源程序编译后即可在该平台运行，后者是在运行期间才编译。所以前者运行速度快，后者跨平台性好
+
+
+### 25 for...in和for...of的区别  
+<!-- 可以查看阮一峰 es6 的迭代器接口和 for of -->
+
+for...of循环可以使用的范围包括数组、Set 和 Map 结构、某些类似数组的对象（比如arguments对象、DOM NodeList 对象）、后文的 Generator 对象，以及字符串。
+
+for of 是 es6 新增的遍历方法, 允许遍历一个含有 迭代器接口 [iterator接口]的数据结构(数组,对象等),并且返回各项的值,和 es3中的 for...in 的区别如下
+
+* for…of 遍历获取的是对象的键值，for…in 获取的是对象的键名；
+* for… in 会遍历对象的整个原型链，性能非常差不推荐使用，而 for … of 只遍历当前对象不会遍历原型链；
+* 对于数组的遍历，for…in 会返回数组中所有可枚举的属性(包括原型链上可枚举的属性)，for…of 只返回数组的下标对应的属性值；
+  
+总结： for...in 循环主要是为了遍历对象而生，不适用于遍历数组；for...of 循环可以用来遍历数组、类数组对象，字符串、Set、Map 以及 Generator 对象。
+
+
+### 如何使用for...of遍历对象
+
+for...of 是作为es6新增的遍历方式,允许遍历一个 含有 iterator 接口的数据接口,并且返回各项的值,普通的对象用for..of遍历是会报错的
+
+如果需要遍历的对象是类数组对象，用Array.from转成数组即可。
+
+```js
+var obj = {
+    0:'one',
+    1:'two',
+    length: 2
+};
+obj = Array.from(obj);
+for(var k of obj){
+    console.log(k)
+}
+```
+如果不是类数组对象，就给对象添加一个[Symbol.iterator]属性，并指向一个迭代器即可。
+
+```js
+
+//方法一：
+var obj = {
+    a:1,
+    b:2,
+    c:3
+};
+
+obj[Symbol.iterator] = function(){
+	var keys = Object.keys(this);
+	var count = 0;
+	return {
+		next(){
+			if(count<keys.length){
+				return {value: obj[keys[count++]],done:false};
+			}else{
+				return {value:undefined,done:true};
+			}
+		}
+	}
+};
+
+for(var k of obj){
+	console.log(k);
+}
+
+
+// 方法二
+var obj = {
+    a:1,
+    b:2,
+    c:3
+};
+obj[Symbol.iterator] = function*(){
+    var keys = Object.keys(obj);
+    for(var k of keys){
+        yield [k,obj[k]]
+    }
+};
+
+for(var [k,v] of obj){
+    console.log(k,v);
+}
+```
+###   ajax、axios、fetch的区别
+
+（1）AJAX
+Ajax 即“AsynchronousJavascriptAndXML”（异步 JavaScript 和 XML），是指一种创建交互式网页应用的网页开发技术。它是一种在无需重新加载整个网页的情况下，能够更新部分网页的技术。通过在后台与服务器进行少量数据交换，Ajax 可以使网页实现异步更新。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新。传统的网页（不使用 Ajax）如果需要更新内容，必须重载整个网页页面。其缺点如下：
+* 本身是针对MVC编程，不符合前端MVVM的浪潮
+* 基于原生XHR开发，XHR本身的架构不清晰
+* 不符合关注分离（Separation of Concerns）的原则
+* 配置和调用方式非常混乱，而且基于事件的异步模型不友好。
+(2)Fetch
+fetch号称是AJAX的替代品，是在ES6出现的，使用了ES6中的promise对象。Fetch是基于promise设计的。Fetch的代码结构比起ajax简单多。fetch不是ajax的进一步封装，而是原生js，没有使用XMLHttpRequest对象
+
+fetch的优点：
+
+* 语法简洁，更加语义化
+* 基于标准 Promise 实现，支持 async/await
+* 更加底层，提供的API丰富（request, response）
+* 脱离了XHR，是ES规范里新的实现方式
+
+fetch的缺点：
+fetch只对网络请求报错，对400，500都当做成功的请求，服务器返回 400，500 错误码时并不会 reject，只有网络错误这些导致请求不能完成时，fetch 才会被 reject。
+fetch默认不会带cookie，需要添加配置项： fetch(url, {credentials: 'include'})
+fetch不支持abort，不支持超时控制，使用setTimeout及Promise.reject的实现的超时控制并不能阻止请求过程继续在后台运行，造成了流量的浪费
+fetch没有办法原生监测请求的进度，而XHR可以
+
+（3）Axios
+Axios 是一种基于Promise封装的HTTP客户端，其特点如下：
+
+1. 浏览器端发起XMLHttpRequests请求
+2. node端发起http请求
+3. 支持Promise API
+4. 监听请求和返回
+5. 对请求和返回进行转化
+6. 取消请求
+7. 自动转换json数据
+8. 客户端支持抵御XSRF攻击
+
+
+### 28. 数组的遍历方法有哪些
+
+| 方法                      | 是否改变原数组 | 特点                                                                                                                                       |
+| ------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| forEach()                 | 否             | 数组方法，不改变原数组，没有返回值 ,如果原数组是数组对象,可以改变数组独享的属性                                                            |
+| map()                     | 否             | 数组方法，不改变原数组，有返回值，可链式调用                                                                                               |
+| filter()                  | 否             | 数组方法，过滤数组，返回包含符合条件的元素的数组，可链式调用                                                                               |
+| for...of                  | 否             | for...of遍历具有Iterator迭代器的对象的属性，返回的是数组的元素、对象的属性值，不能遍历普通的obj对象，将异步循环变成同步循环                |
+| every() 和 some()         | 否             | 数组方法，some()只要有一个是true，便返回true；而every()只要有一个是false，便返回false.                                                     |
+| find() 和 findIndex()     | 否             | 数组方法，find()返回的是第一个符合条件的值；findIndex()返回的是第一个返回条件的值的索引值                                                  |
+| reduce() 和 reduceRight() | 否             | 数组方法，reduce()对数组正序操作；reduceRight()对数组逆序操                                                                 作 求乘积,求和 |
+### 29   forEach和map方法有什么区别
+这方法都是用来遍历数组的，两者区别如下：
+
+forEach()方法会针对每一个元素执行提供的函数，对数据的操作不会改变原数组，该方法没有返回值；
+map()方法不会改变原数组的值，返回一个新数组，新数组中的值为原数组调用函数处理之后的值；
 ### 疑惑点
 
-1.  new 最后一步
+### 1.  new 最后一步
 
-2. 迭代是什么意思，迭代器是什么？  
+### 2. 迭代是什么意思，迭代器是什么？  
 
     迭代是遍历的意思
 
-3.  数据的传输是json 格式的字符串
+### 3.  数据的传输是json 格式的字符串
 
-4. 问题 uri 和 url 的区别
+### 4. 问题 uri 和 url 的区别
 
 url +urn   =uri
 
 uri 是 url 的超级
-5. module 模块的学习
+### 5. module 模块的学习
+
+### 6. for  for in  和 for of 的区别
+
+### 7. this 指向经典面试题
+
+```js
+var x = 20;
+var a = {
+ x: 15,
+ fn: function() {
+ var x = 30;
+ return function() {
+  return this.x
+ }
+ }
+}
+console.log(a.fn());
+console.log((a.fn())());
+console.log(a.fn()());
+console.log(a.fn()() == (a.fn())());
+console.log(a.fn().call(this));
+console.log(a.fn().call(a));
+```
+
+1.console.log(a.fn());
+对象调用方法，返回了一个方法。
+# function() {return this.x}
+
+2.console.log((a.fn())());
+a.fn()返回的是一个函数，()()这是自执行表达式。this -> window
+# 20
+
+3.console.log(a.fn()());
+a.fn()相当于在全局定义了一个函数，然后再自己调用执行。this -> window
+# 20
+
+4.console.log(a.fn()() == (a.fn())());
+# true
+
+5.console.log(a.fn().call(this));
+这段代码在全局环境中执行，this -> window
+# 20
+
+6.console.log(a.fn().call(a));
+this -> a
+# 15
+
+### iterator接口是什么?  迭代器接口
+
+* [文档1](https://www.yisu.com/zixun/632393.html)
+* [文档2](https://www.csdn.net/tags/Mtjakg0sNjk5NzgtYmxvZwO0O0OO0O0O.html)
+
+
+###  Generator 对象 是什么?
+
+
+
+#### js 中数组遍历的使用场景
+
+map 的使用场景可以查看[参考文章](https://zhuanlan.zhihu.com/p/481795339)
+
+
+foreach
+遍历数组中的每一项，没有返回值，对原数组没有影响，不支持IE
+
+map
+有返回值
+map的回调函数中支持return返回值；return的是啥，相当于把数组中的这一项变为啥（并不影响原来的数组，只是相当于把原数组克隆一份，把克隆的这一份的数组中的对应项改变了）；
+
+filter
+不会改变原始数组,返回新数组
+
+every
+every()是对数组中的每一项运行给定函数，如果该函数对每一项返回true,则返回true。返回布尔值
+
+find
+find()方法返回数组中符合测试函数条件的第一个元素。否则返回undefined
+
+```js
+let  bb =[{a:1},{a:2}]
+let cc = bb.find((item)=>{return item.a == 1})
+
+```
+
+findIndex
+返回索引值，如果没有符合条件的元素则返回-1
+
+findIndex 不会改变数组对象。
