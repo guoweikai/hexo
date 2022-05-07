@@ -473,7 +473,14 @@ console.log(i); // 11
 
 ES6 Module和CommonJS模块的区别：
 
-* CommonJS 是对模块的浅拷贝, es6 Module 是对模块的引用
+* CommonJS 模块输出的是一个值的拷贝,es6 模块输出的是值的引用
+* CommonJS 模块是运行时加载，ES6 模块是编译时输出接口。
+* import的接⼝是read-only（只读状态），不能修改其变量值。 即不能修改其变量的指针指向，但可以改变变量内部指针指向，可以对commonJS对重新赋值（改变指针指向），但是对ES6 Module赋值会编译报错。
+  
+
+  ES6 Module和CommonJS模块的共同点：
+  * CommonJS和ES6 Module都可以对引⼊的对象进⾏赋值，即对对象内部属性的值进⾏改变。
+<!-- 具体可以看 module 模块 -->
 
 
 
@@ -492,3 +499,4 @@ ES6 Module和CommonJS模块的区别：
 url +urn   =uri
 
 uri 是 url 的超级
+5. module 模块的学习
