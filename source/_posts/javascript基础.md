@@ -796,22 +796,22 @@ console.log(a.fn().call(a));
 
 2.console.log((a.fn())());
 a.fn()返回的是一个函数，()()这是自执行表达式。this -> window
-# 20
+//20
 
 3.console.log(a.fn()());
 a.fn()相当于在全局定义了一个函数，然后再自己调用执行。this -> window
-# 20
+//20
 
 4.console.log(a.fn()() == (a.fn())());
-# true
+//true
 
 5.console.log(a.fn().call(this));
 这段代码在全局环境中执行，this -> window
-# 20
+//20
 
 6.console.log(a.fn().call(a));
 this -> a
-# 15
+//15
 
 ### iterator接口是什么?  迭代器接口
 
@@ -819,11 +819,11 @@ this -> a
 * [文档2](https://www.csdn.net/tags/Mtjakg0sNjk5NzgtYmxvZwO0O0OO0O0O.html)
 
 
-###  Generator 对象 是什么?
+### 8 Generator 对象 是什么?
 
 
 
-#### js 中数组遍历的使用场景
+#### 9 js 中数组遍历的使用场景
 
 map 的使用场景可以查看[参考文章](https://zhuanlan.zhihu.com/p/481795339)
 
