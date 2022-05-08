@@ -38,17 +38,25 @@ Function.prototype.myCall = function(context){
     if(typeof this  !==function ){
         console.error("type error");
     }
-    let arg
-
+    let args = [...arguments].slice(1),
+    result = null;
+    context = context || window  比 if 的那种写法好多了
+    context.fn = this;
+    result =   context.fn(...args)
+    delete context.fn 
+    return restul 
 }
 
 ```
 
-(2)
+(2) apply 的实现步骤
+<!-- 稍后去补全 -->
+
+
+(3) bind 的实现步骤
 
 
 问题: 
-
 ### 1. call apply  bind  都定义在哪里
 
 call apply bind 都定义在 Function.prototype 上 
@@ -187,3 +195,4 @@ ww.dd.bind({a:1},1)(2,3)
 ```
 
  2. bind 还要注意是否是 new 调用的 ,如果是 new 调用的 this 的优先级最高
+
