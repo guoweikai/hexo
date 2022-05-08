@@ -309,9 +309,9 @@ console.log(outObj)
 
 #  问题 
 
- Object.is(-1,1)
+ 1. Object.is(-1,1)
 
-Object.prototype.valueOf()
+2. Object.prototype.valueOf()
 
 valueof()方法返回指定对象的原始值
 
