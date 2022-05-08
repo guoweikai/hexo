@@ -13,14 +13,38 @@ this 是执行上文的一个属性,它指向了最后一次调用这个方法�
 * 第三种是构造器调用模式, 如果一个函数用 new 调用时,函数执行前会新创建一个对象,this 指向这个新创建的对象
 * 第四种是 apply, call , bind 调用模式,
 
+这三个方法都可以显示的指定调用函数的 this 指向。其中 apply 方法接收两个参数：一个是 this 绑定的对象，一个是参数数组。call 方法接收的参数，第一个是 this 绑定的对象，后面的其余参数是传入函数执行的参数。也就是说，在使用 call() 方法时，传递给函数的参数必须逐个列举出来。bind 方法通过传入一个对象，返回一个 this 绑定了传入对象的新函数。这个函数的 this 指向除了使用 new 时会被改变，其他情况下都不会改变。
+
+这四种方式，使用构造器调用模式的优先级最高，然后是 apply、call 和 bind 调用模式，然后是方法调用模式，然后是函数调用模式。
+
 ### 2. call() 和 apply() 的区别？
 它们的作用一模一样,
 * apply 接受两个参数，第一个参数指定了函数体内 this 对象的指向，第二个参数为一个带下标的集合，这个集合可以为数组，也可以为类数组，apply 方法把这个集合中的元素作为参数传递给被调用的函数。
 * call 传入的参数数量不固定，跟 apply 相同的是，第一个参数也是代表函数体内的 this 指向，从第二个参数开始往后，每个参数被依次传入函数。
 ### 3. 实现call、apply 及 bind 函数
 (1) call 函数的实现步骤
+* 判断调用对象是否是函数,但是可能出现使用 call 等方式调用的情况。
+* 判断传入的上下文对象是否存在,如果不存在,则设置为 window
+* 处理传入的参数, 截取第一个参数后的所有参数
+* 将函数对象作为上下文对象的一个属性
+* 使用上下文对象调用这个方法,并保存返回结果
+* 删除刚才新增的属性。
+* 返回结果。
 
 
+```js
+
+Function.prototype.myCall = function(context){
+    if(typeof this  !==function ){
+        console.error("type error");
+    }
+    let arg
+
+}
+
+```
+
+(2)
 
 
 问题: 
@@ -101,6 +125,19 @@ btn.onclick = function(){
     this.disabled = false
     }.bind(this),3000)
 
+
+// 参数的合并
+let ww ={
+
+    dd:function(a,b,c){
+    console.log(a)
+        console.log(b)
+        console.log(c)
+        
+    }
+}
+ww.dd.bind({a:1},1)(2,3)
+
 ```
 
 ### 3. call apply bind   三者的相同点和不同点 
@@ -131,5 +168,22 @@ console.log(Math.max.apply(Math,arr))
 
 
 ```
-
 * bind不调用函数，但是要改变this的指向 如定时器内部的this等
+
+ 1. bind可以传入多个参数,是合并到调用函数
+```js
+// 参数的合并
+let ww ={
+
+    dd:function(a,b,c){
+    console.log(a)
+        console.log(b)
+        console.log(c)
+        
+    }
+}
+ww.dd.bind({a:1},1)(2,3)
+
+```
+
+ 2. bind 还要注意是否是 new 调用的 ,如果是 new 调用的 this 的优先级最高
