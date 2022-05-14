@@ -134,13 +134,7 @@ const list = Array.from(new Set(arr.flat(Infinity)));
 console.log(list); // [1,2,3,4,5,6,7,8]
 ```
 
-
-
-
-
-
 ### 参考
-
 [参考文章一](https://zhuanlan.zhihu.com/p/29514159)
 [参考文章二](https://blog.csdn.net/lj745280746/article/details/70880809)
 [参考文章三](https://blog.csdn.net/weixin_45368324/article/details/105427638)

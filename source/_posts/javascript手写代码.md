@@ -4,7 +4,9 @@ date: 2022-03-10 11:24:20
 tags:
 ---
 
-### 1. 手写 Object.create
+[链接地址](https://juejin.cn/post/6946136940164939813)
+
+### 1. 手写 Object.create (对象的方法的考察) 
    Object.create() 函数传入一个对象, 将此对象作为原型,创建一个新对象
 
 
@@ -17,10 +19,15 @@ tags:
 
    ```
 
-### 手写 instanceof 方法
+### 2. 手写 instanceof 方法 (数据类型方法的考察)
 
 
-#### 
+### 3. 手写 new 操作符  (new 操作符创建对象的考察)
+
+
+### 4. 手写 Promise (对 promise 构造函数的考察)
+
+
 
 
 
