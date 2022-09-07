@@ -5,6 +5,21 @@ tags:
 ---
 
 ## 组件基础:
+
+### 1. React 事件机制( 和原生事件区别)
+
+```js
+    <div onClick={this.handleClick.bind(this)}></div>
+```
+React 并不是将 click 事件绑定到 div 的真实 DOM 上, 而是在 document 处监听了所有的事件, 当事件发生并且冒泡到 document 处的时候, React 将事件内容封装并交由真正的处理函数运行, 这样的方式不仅仅减少了内存的消耗, 还能在组件挂在销毁时统一订阅和移除事件
+
+除此之外, 冒泡到 document 上的 事件也不是原生的浏览器事件, 而是由 react 自己实现的合成事件,因此 如果不想要是事件冒泡的话应该调用 e.preventDefault() 方法,而不是调用 event.stopProppagtion()方法
+
+
+### 2. 
+
+
+
 ### 3 react 组件中怎么做事件代理? 它的原理是什么?
 
 React 基于 virtual DOM 实现了一个 合成事件层, 定义的事件处理器会接收到一个合成事件对象的实例, 它符合 w3c标准, 且与原生的浏览器事件拥有相同的接口, 支持冒泡机制,所有的事件都自动绑定在最外层上
@@ -77,7 +92,11 @@ React 的处理 render 的基本思维模式是每一次有变动就会去重新
 
 ### 18 对 React 的插槽(portals) 的理解, 如何使用, 有哪些使用场景
 
-React 官方对 Portals 的定义
+React 官方对 Portals 的定义:
+
+Portal 提供了一种将子节点渲染到存在于父组件以外的 DOM 节点的优秀的方案
+
+Portals 是 React 16 提供的官方解决方案,使得组件可以脱离父组件层级
 
 
 ## 2. 数据管理
