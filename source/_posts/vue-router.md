@@ -460,9 +460,9 @@ vue-router 路由元信息说白了就是通过
 
 
 
-api 解析:
+# api 解析:
 
-router-link props
+## router-link props
 
 * to
 
@@ -476,7 +476,7 @@ router-link props
    链接激活时, 应用与渲染的 <a> 的 class
 
 
-router-view props
+## router-view props
 
  如果 <router-view> 设置了名称, 则会渲染对应的路由配置中. components 下的相应组件
 
@@ -488,7 +488,7 @@ router-view props
 * hash:使用 URL hash 值来作为路由,支持所有浏览器,包括不支持 HTML 5 History Api 的浏览器
   
 
-Router 实例属性
+## Router 实例属性
 
 
 
