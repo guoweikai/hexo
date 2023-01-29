@@ -358,8 +358,9 @@ https://github.com/xxx/yyy/zzz 前端跳转，不刷新页面
 
 3. history 的 API
 
-|  ----  | ----  |
+
 |API     |    定义   |
+|  ----  | ----  |
 |history.pushState(data,title [, url]) |  pushState 主要用于往历史记录堆栈顶部添加一条记录, 各参数解析如下: 1. data 会在 onpopstate 事件触发时作为参数传递过去; 2 title 为页面标题, 当前所有浏览器都会忽略此参数; 3 url 为页面地址, 可选, 缺少时表示为当前页地址|
 |history.replaceState(data,title[,url])|更改当前的历史记录,参数同上; 上面的 pushstate 是添加, 这个更改|
 |histroy.state| 用于存储以上方法的 data 数据, 不同浏览器的读写权限不一样|
