@@ -364,12 +364,12 @@ https://github.com/xxx/yyy/zzz 前端跳转，不刷新页面
 3. history 的 API
 
 
-|API     |    定义   |
-|  ----  | ----  |
-|history.pushState(data,title [, url]) |  pushState 主要用于往历史记录堆栈顶部添加一条记录, 各参数解析如下: 1. data 会在 onpopstate 事件触发时作为参数传递过去; 2 title 为页面标题, 当前所有浏览器都会忽略此参数; 3 url 为页面地址, 可选, 缺少时表示为当前页地址|
-|history.replaceState(data,title[,url])|更改当前的历史记录,参数同上; 上面的 pushstate 是添加, 这个更改|
-|histroy.state| 用于存储以上方法的 data 数据, 不同浏览器的读写权限不一样|
-|window.onpopstate| 响应 pushstate 或者 replaceState的调用 |
+| API                                    | 定义                                                                                                                                                                                                                   |
+| -------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| history.pushState(data,title [, url])  | pushState 主要用于往历史记录堆栈顶部添加一条记录, 各参数解析如下: 1. data 会在 onpopstate 事件触发时作为参数传递过去; 2 title 为页面标题, 当前所有浏览器都会忽略此参数; 3 url 为页面地址, 可选, 缺少时表示为当前页地址 |
+| history.replaceState(data,title[,url]) | 更改当前的历史记录,参数同上; 上面的 pushstate 是添加, 这个更改                                                                                                                                                         |
+| histroy.state                          | 用于存储以上方法的 data 数据, 不同浏览器的读写权限不一样                                                                                                                                                               |
+| window.onpopstate                      | 响应 pushstate 或者 replaceState的调用                                                                                                                                                                                 |
  
  4. history 的特点
 
@@ -469,6 +469,9 @@ vue-router 路由元信息说白了就是通过
 ## 数据获取
 
 
+## 滚动行为
+
+
 
 ## 路由懒加载
 
@@ -503,7 +506,97 @@ vue-router 路由元信息说白了就是通过
 * hash:使用 URL hash 值来作为路由,支持所有浏览器,包括不支持 HTML 5 History Api 的浏览器
   
 
+
 ## Router 实例属性
+
+
+
+# vue-router 面试题
+
+
+1. vue-router 是什么? 有哪些组件?
+
+* Vue Rounter 是 Vue.js 官方的路由管理器. 它和 Vue.js 的核心深度集成. 让构建单页面应用变的易如反掌.
+* rounter-linkv   rounter-view keep-alive
+
+2. 怎么定义 vue-router 的动态路由? 怎么获取传过来的值?
+
+* 动态路由的创建, 主要是使用 path 属性过程中, 使用动态路径参数, 以冒号开头, 如下:
+
+```js
+{
+  path: '/details/:id',
+  name:'Details',
+  components:Details
+}
+```
+
+3. vue-router 有哪几种导航钩子
+
+* 全局
+
+ 全局前置守卫
+
+* 路由独享的
+* 组件内导航钩子
+
+4. $route 和$router 的区别是什么?
+
+* router 为 vueRouter 的实例, 是一个全局路由对象, 包含了路由跳转的方法, 钩子函数等.
+* route 是路由信息对象|| 跳转的路由对象, 每一个路由都会有一个 route 对象, 是一个局部对象, 包含 path params hash query fullPath ,matched,name 等路由信息参数
+
+5. vue-router 响应路由参数的变化
+
+* 用 watch 检测 监听当前路由发生变化的时候执行
+* 组件内导航钩子函数
+
+6. vue-router 传参
+ 
+   * Params
+    1. 只能使用 name , 不能使用 path
+    2. 参数不会显示在路径上
+    3. 浏览器强制刷新参数会被清空
+  * Query
+    1. 参数会显示在路径上, 刷新不会被清空
+    2. name 可以使用 path 路径
+
+7. vue-router 的两种模式
+  * hash
+     原理是 onhashchange 可以在 window 对象上监听这个事件
+  ```js
+    window.onhashchange = function(event){
+        console.log(event.oldURL, event.newURL)
+  let hash = location.hash.slice(1)
+    }
+  ```
+  * history
+     利用了HTML5 History Interface 中新增的pushState()和replaceState()方法。
+     需要后台配置支持。如果刷新时，服务器没有响应响应的资源，会刷出404
+
+8. vue-router 实现路由懒加载(动态加载路由)
+  把不同路由对应的组件分割成不同的代码块，然后当路由被访问时才加载对应的组件即为路由的懒加载，可以加快项目的加载速度，提高效率
+
+  ```js
+  const router = new VueRouter({
+  routes: [
+    {
+      path: '/home',
+      name: 'Home'，
+      component:() = import('../views/home')
+		}
+  ]
+})
+  ```
+  找出几个面试题背一下就可以了
+
+
+  
+
+
+  
+
+
+
 
 
 
