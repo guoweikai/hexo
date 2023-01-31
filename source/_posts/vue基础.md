@@ -708,8 +708,330 @@ new Vue({
 **值绑定**
 
 
+**修饰符**
+1. .lazy
+  在默认情况下, v-model 在每次 input 事件触发后将输入框的值与数据进行同步(除了上述输入法组合文字时). 你可以添加 lazy 修饰符,从而转为在 change 事件之后进行同步
+  > input 输入框的 onchange 事件,要在 input 市区焦点的时候才会触发;
+  在输入框内容变化的时候不会触发 change, 当鼠标在其他地方点一下才会触发
+  onchange 事件也可用于单选框与复选卡改变后触发的事件
+2. .number
+   如果想自动将用户的输入值转为数值类型,可以给 v-model 添加 number 修饰符 :
+
+   ```js
+    <input v-model.number="age" type="number">
+
+   ```
+3. .trim
+
+  如果要自动过滤用户输入的首尾空白字符, 可以给 v-model 添加trim 修饰符
+
+```js
+<input v-model.trim="msg">
+
+```
+
+**在组件上使用 v-model**
+
+HTML 原生的输入元素类型并不总能满足需求。幸好，Vue 的组件系统允许你创建具有完全自定义行为且可复用的输入组件。这些输入组件甚至可以和 v-model 一起使用！
+要了解更多，请参阅组件指南中的自定义输入组件。
 
 
+
+## 组件基础
+
+**基本实例** 
+
+这里有一个 Vue 组件的示例
+
+```js
+// 定义一个名为 button-counter 的新组件
+Vue.component('button-counter', {
+  data: function () {
+    return {
+      count: 0
+    }
+  },
+  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
+})
+```
+组件是可复用的 Vue 实例，且带有一个名字：在这个例子中是 <button-counter>。我们可以在一个通过 new Vue 创建的 Vue 根实例中，把这个组件作为自定义元素来使用：
+
+```js
+<div id="components-demo">
+  <button-counter></button-counter>
+</div>
+
+```
+
+```js
+new Vue({ el: '#components-demo' })
+
+```
+
+因为组件是可复用的 Vue 实例, 所以它们与 new Vue 接收相同的选项, 例如 data, computed ,watch ,methods 以及生命周期钩子等, 仅有的例外是像 el 这样根实例特有的选项
+
+
+**组件的复用**
+
+data 必须是一个函数
+
+**组件的组织**
+
+通常一个应用会以一棵嵌套的组件树的形式来组织：
+
+
+例如，你可能会有页头、侧边栏、内容区等组件，每个组件又包含了其它的像导航链接、博文之类的组件。
+
+为了能在模板中使用，这些组件必须先注册以便 Vue 能够识别。这里有两种组件的注册类型：全局注册和局部注册。至此，我们的组件都只是通过 Vue.component 全局注册的
+
+```js
+
+Vue.component('my-component-name', {
+  // ... options ...
+})
+
+```
+
+全局注册的组件可以用在其被注册之后的任何 (通过 new Vue) 新创建的 Vue 根实例，也包括其组件树中的所有子组件的模板中。
+
+**通过 prop 向子组件传递数据**
+prop 是你可以在组件上注册的一些自定义 attribute, 当一个值传递给一个 prop attribute 的时候, 它就变成了那个组件实例的一个 property. 
+一个组件默认可以拥有任意数量的 prop, 任何值都可以传递给任何 prop. 在上述模版中,你会发现我们能够在组件实例中访问这个值.就像访问 data 中的值一样
+
+
+可以是用 v-bind 动态传递 prop
+
+**单个根元素**
+
+**监听子元素事件**
+  使用事件抛出一个值
+  在组件上使用 v-model
+
+**通过插槽分发内容**
+
+和 HTML元素以信仰,我们经常需要向一个组件传递内容,像这样
+
+```js
+
+```
+
+
+**动态组件**
+
+
+**解析 DOM 模板时的注意事项**
+有些 HTML 元素, 诸如 ul ,ol, table , select , 对于哪些元素可以出现在其内部是有严格限制的. 而有些元素, 诸如li tr option 只能出现在其它某些特定的元素内部
+
+这会导致我们使用这些有约束条件的元素时遇到一些问题. 例如:
+
+```js
+  <table>
+  <blog-post-row></blog-post-row>
+</table>
+```
+这个自定义组件 blog-post-row 会被作为无效的内容提升到外边, 并导致最终渲染结果出错.
+幸好 这个特殊的 is attribute 给我们一个变通的方法
+
+```js
+<table>
+  <tr is="blog-post-row"></tr>
+</table>
+
+```
+需要注意的是如果我们从以下来源使用模板的话，这条限制是不存在的：
+
+* 字符串 (例如：template: '...')
+* 单文件组件 (.vue)
+* script type="text/x-template"
+
+
+
+# 深入了解组件
+
+## 组件注册
+
+**组件名**
+在注册一个组件的时候,我们始终需要给它一个名字,不如在全局注册的时候我们已经看到了:
+
+```js
+Vue.component('my-component-name', { /* ... */ })
+```
+该组件名就是 Vue.component 的第一个参数。
+
+你给予组件的名字可能依赖于你打算拿它来做什么。当直接在 DOM 中使用一个组件 (而不是在字符串模板或单文件组件) 的时候，我们强烈推荐遵循 W3C 规范中的自定义组件名 (字母全小写且必须包含一个连字符)。这会帮助你避免和当前以及未来的 HTML 元素相冲突。
+
+
+**组件名大小写**
+
+**全局注册**
+
+到目前为止, 我们只用过  Vue.component 来创建组件:
+
+```js
+  Vue.component("my-component-name",{
+    // ....选项...
+  })
+
+```
+
+这些组件是全局注册的, 也就是说它们在注册之后可以用在任何新创建的 Vue 根实例(new  Vue)的模板中. 比如:
+
+```js
+
+  Vue.component('component-a', { /* ... */ })
+  Vue.component('component-b', { /* ... */ })
+  Vue.component('component-c', { /* ... */ })
+
+  new Vue({ el: '#app' })
+```
+
+在所有子组件中也是如此，也就是说这三个组件在各自内部也都可以相互使用。
+
+局部注册:
+全局注册往往是不够理想的. 比如, 如果你使用一个想 webpack 这样的构建系统, 全局注册所有的组件意味着即便你已经不再使用一个组件了,它仍然会被包含在你最终的构建结果中. 这造成了用户下载的 js 的无畏的增加
+
+在这些情况下, 你可以通过一个普通的 js对象来定义组件
+
+```js
+var ComponentA = { /* ... */ }
+var ComponentB = { /* ... */ }
+var ComponentC = { /* ... */ }
+
+```
+然后在 components 选项中定义你想要实用的组件
+
+
+```js
+new Vue({
+  el: '#app',
+  components: {
+    'component-a': ComponentA,
+    'component-b': ComponentB
+  }
+})
+
+```
+对于 components 对象中的每个 property 来说, 其 property 名就是自定义元素的名字, 其 property 值就是这个组件的选项对象
+
+
+> 注意局部注册的组件在其子组件中不可用. 例如. 如果你希望 ComponentA 在 ComponentB中可用, 则你需要这么写
+
+```js
+var ComponentA = { /* ... */ }
+
+var ComponentB = {
+  components: {
+    'component-a': ComponentA
+  },
+  // ...
+}
+```
+注意在 ES2015+ 中，在对象中放一个类似 ComponentA 的变量名其实是 ComponentA: ComponentA 的缩写，即这个变量名同时是：
+* 用在模板中的自定义元素的名称
+* 包含了这个组件选项的变量名
+
+
+
+**基础组件的自动化全局注册**
+
+可能你的许多组件只是包裹了一个输入框或按钮之类的元素, 是相对通用的. 我们有时候会把它们称为基础组件, 它们会在各个组件中被频繁地用到
+
+所以会导致很多组件都会有一个包含基础组件的长列表
+
+```js
+
+import BaseButton from './BaseButton.vue'
+import BaseIcon from './BaseIcon.vue'
+import BaseInput from './BaseInput.vue'
+
+export default {
+  components: {
+    BaseButton,
+    BaseIcon,
+    BaseInput
+  }
+}
+```
+
+而只是用于模板中的一小部分：
+
+```js
+<BaseInput
+  v-model="searchText"
+  @keydown.enter="search"
+/>
+<BaseButton @click="search">
+  <BaseIcon name="search"/>
+</BaseButton>
+
+
+```
+
+如果你恰好使用了 webpack(或在内部使用了 webpack 的 Vue CLI 3+),那么就可以使用 require.context 只全局注册这些非常通用的基础组件, 
+
+
+
+
+
+
+
+# api
+
+**el**
+* 类型 string| ELement
+* 限制: 只在用 new 创建实例时有效
+详细:
+提供一个在页面上已存在的 DOM 元素作为 Vue实例的挂载目标(挂载的意思就是 Vue 实例与页面发生关系),可以是 css 选择器, 也可以是一个 HTMLElement 实例
+
+
+
+面试题:
+
+
+
+**什么是生命周期**
+
+每个 Vue 实例在被创建时都要经过一系列的初始化过程--例如,需要设置数据监听,编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等, 同时在这个过程中也会运行一些叫做神功周期钩子的函数, 这给了用户在不同阶段添加自己的代码的机会.
+
+Vue中生命周期, 一共分为四大类, 分别是实例期,挂载期, 更新期, 销毁期, 每个周期飞卫当前周期前后. 其实简单点来说生命周期跟我们人的一生也挺相似的. 
+
+我们人一生分为出生前(实例期)，青年期(挂载期),中老年期(更新期)，死亡(销毁期)，下面见生命周期图解
+
+**生命周期图解**
+1. 实例期
+ 实例创建前(beforeCreate)
+   * 组件实例刚刚被创建, 组件属性还未创建
+   * 在实例初始化之后, 数据观测(data observe) 和 event/ watcher 事件配置之前调用
+ 实例创建后(Created)
+   组件实例创建完成, 属性已经绑定, 但是挂载阶段还没开始,  DOM 还未生成, $el 属性目前不可见
+
+2. 挂载期:
+  挂载前(beforeMount):
+  * 在挂载开始之前被调用, 相关的 render 函数首次被调用, 该钩子在服务端渲染期间不被调用
+  * 挂载后(mounted)
+    + el 被创建的 vm.$el 替换, 并挂载到到实例上去之后调用该钩子
+    + 如果root实例挂在了一个文档内元素,当mounted被调用时,vm.$el也在文档内
+    + 该钩子在服务器端渲染期间不被调用
+3. 更新期:
+  更新前(beforeUpdate):
+     * 数据更新时调用,发生在虚拟 DOM 打补丁之前. 这里适合在更新之前访问现有的 DOM, 比如手动移除已添加的事件监听器
+     * 数据更新时调用,发生在虚拟 DOM 重选渲染和打补丁之前
+     * 可以在这个钩子中进一步的更改状态,这不会触发附加的重新渲染过程.
+  更新后(updated)
+    * 由于数据更改导致的虚拟 DOM 重新渲染和打补丁,在这之后会调用该钩子
+    * 当这个钩子被调用时, 组件 DOM 已经更新,所以你现在可以执行依赖于 DOM 的操作
+    * 该钩子在服务器端渲染期间不被调用
+4. 销毁期
+   销毁期(beforeDestory)
+    * 实例销毁之前调用,在这一步, 实例仍然完全可用
+    * 该钩子在服务器渲染期间不被调用
+  销毁后(Destory)
+    * Vue 实例销毁后调用,调用后, Vue 实例指定的所有东西都会解除绑定, 所有的事件监听器都会被移除, 所有的子实例也会被销毁
+    * 该钩子在服务端渲染期间不会被调用
+
+
+
+**vue 中 render 函数做了什么?**
 
 
 
