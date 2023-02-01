@@ -887,7 +887,7 @@ Vue.component('my-component-name', { /* ... */ })
 
 在所有子组件中也是如此，也就是说这三个组件在各自内部也都可以相互使用。
 
-局部注册:
+**局部注册**
 全局注册往往是不够理想的. 比如, 如果你使用一个想 webpack 这样的构建系统, 全局注册所有的组件意味着即便你已经不再使用一个组件了,它仍然会被包含在你最终的构建结果中. 这造成了用户下载的 js 的无畏的增加
 
 在这些情况下, 你可以通过一个普通的 js对象来定义组件
@@ -968,6 +968,800 @@ export default {
 ```
 
 如果你恰好使用了 webpack(或在内部使用了 webpack 的 Vue CLI 3+),那么就可以使用 require.context 只全局注册这些非常通用的基础组件, 
+
+
+## Prop
+
+**Prop的大小写**
+
+HTML 中的 attribute 名是大小写不敏感的, 所以浏览器会把所有大写字符解释为小写字符. 这意味着当你使用 DOM 中的模板时, camelCase(驼峰命名法)的 prop 名需要使用等价的 kebab-case(短横线分割命名)命名:
+
+```js
+Vue.component('blog-post', {
+  // 在 JavaScript 中是 camelCase 的
+  props: ['postTitle'],
+  template: '<h3>{{ postTitle }}</h3>'
+})
+```
+```js
+  <!-- 在 HTML 中是 kebab-case 的 -->
+<blog-post post-title="hello!"></blog-post>
+```
+
+
+重申一次, 如果你使用模版字符串模版, 那么这个限制就不存在了
+
+
+**Prop 类型**
+
+传递静态或动态 Prop
+    传入一个数字
+    传入一个布尔值
+
+
+**单向数据流**
+
+所有的 prop 都使得其父子 prop 之间形成了一个 单向下行绑定:父级 prop 的更新会向下流动到子组件中, 但是反过来则不行,这样会防止从子组件意外变更父级组件的状态, 从而导致你的应用的数据流向难以理解
+
+额外的, 每次父级组件发生变更时,子组件中所有的 prop 都讲会刷新为最新的值, 这意味着你不应该在一个子组件内部改变 prop, 如果你这样做了, Vue 会在浏览器的控制台中发出警告
+
+1. 这个 prop 用来传递一个初始值；这个子组件接下来希望将其作为一个本地的 prop 数据来使用。在这种情况下，最好定义一个本地的 data property 并将这个 prop 用作其初始值
+
+```js
+  props: ['initialCounter'],
+data: function () {
+  return {
+    counter: this.initialCounter
+  }
+}
+
+```
+
+2. 这个 prop 以一种原始的值传入且需要进行转换. 在这种情况下, 最好使用 这个 prop 的值来定义一个计算属性
+
+
+```js
+  props: ['size'],
+computed: {
+  normalizedSize: function () {
+    return this.size.trim().toLowerCase()
+  }
+}
+```
+
+> 注意在 js 中对象和数组是通过引用传入的. 所以对于一个数组或对象类型的 prop 来说, 在子组件中改变变更这个对象或数组本身将会影响到父组件的状态
+
+**prop 验证**
+
+
+**非 prop 的 Attibute**
+
+一个 非 prop 的 attribute 是指传向一个组件, 但是该组件没有响应的 prop 定义的 attribute
+
+因为显式定义的 prop 适用于向一个子组件传入信息, 然后组件库的作者并不总能遇见组件会被用于怎样的场景. 这也是为什么组件可以接受任意的 attribute, 而这些 attribute 会被添加到这个组件的根元素上.
+
+例如, 想象一下你通过一个 bootstrap 插件使用了一个第三方的 bootstrap-data-input 组件, 这个插件需要在其 input 上使用一个 data-data-picker attribute , 我们可以将这个 attribute 添加到你的组件实例上
+
+```js
+
+<bootstrap-date-input data-date-picker="activated"></bootstrap-date-input>
+
+```
+然后这个 data-date-picker="activated" attribute 就会自动添加到 bootstrap-date-input 的根元素上。
+
+1. 替换/合并已有的 Attribute
+2. 禁用 Attribute 继承
+
+
+
+
+## 自定义事件
+
+**事件名**
+
+不同于组件和 prop,事件名不存在任何自动化的大小写转换,而是触发的事件名需要完全匹配监听这个事件所用的名称
+
+
+**自定义组件的 v-model**
+
+一个组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选框等类型的输入控件可能会将 value attribute 用于不同的目的。model 选项可以用来避免这样的冲突：
+
+```js
+  Vue.component('base-checkbox', {
+  model: {
+    prop: 'checked',
+    event: 'change'
+  },
+  props: {
+    checked: Boolean
+  },
+  template: `
+    <input
+      type="checkbox"
+      v-bind:checked="checked"
+      v-on:change="$emit('change', $event.target.checked)"
+    >
+  `
+})
+```
+
+现在在这个组件上使用 v-model 的时候：
+
+
+```js
+
+<base-checkbox v-model="lovingVue"></base-checkbox>
+
+```
+
+
+这里的 lovingVue 的值将会传入这个名为 checked 的 prop。同时当 <base-checkbox> 触发一个 change 事件并附带一个新的值的时候，这个 lovingVue 的 property 将会被更新。
+
+
+
+> 注意你仍然需要在组件的 props 选项里声明 checked 这个 prop。
+
+
+
+**将原生事件绑定到组件**
+
+**.sync 修饰符**
+
+在有些情况下, 我们可能需要对一个 prop 进行"双向绑定". 不幸的是, 真正的双向绑定会带来维护上的问题,因为子组件可以变更父组件, 且在父组件和子组件两侧都没有明显的变更来源.
+
+这也是为什么我们推荐以 update:myPropName 的模式触发事件取而代之. 举个例子, 在一个包含 title prop 的假设的组件中, 我们可以用一下方法表达对其赋新值的意图
+
+```js
+  this.$emit('update:title',newTitle)
+```
+
+然后父组件可以监听那个事件并根据需要更新一个本地的数据 property . 例如
+
+```js
+<text-document
+  v-bind:title="doc.title"
+  v-on:update:title="doc.title = $event"
+></text-document>
+
+```
+
+为了方便起见，我们为这种模式提供一个缩写，即 .sync 修饰符：
+
+
+```js
+<text-document v-bind:title.sync="doc.title"></text-document>
+
+```
+>注意带有 .sync 修饰符的 v-bind 不能和表达式一起使用 (例如 v-bind:title.sync=”doc.title + ‘!’” 是无效的)。取而代之的是，你只能提供你想要绑定的 property 名，类似 v-model。
+
+
+当我们用一个对象同时设置多个 prop 的时候，也可以将这个 .sync 修饰符和 v-bind 配合使用：
+
+```js
+<text-document v-bind.sync="doc"></text-document>
+
+```
+
+这样会把 doc 对象中的每一个 property (如 title) 都作为一个独立的 prop 传进去，然后各自添加用于更新的 v-on 监听器。
+
+
+>将 v-bind.sync 用在一个字面量的对象上，例如 v-bind.sync=”{ title: doc.title }”，是无法正常工作的，因为在解析一个像这样的复杂表达式的时候，有很多边缘情况需要考虑。
+
+
+
+## 插槽
+
+**插槽内容**
+
+Vue 实现了一套内容分发的 API, 这套 API 的设计灵感源自  web Components, 将 slot 元素作为承载分发内容的出口
+
+插槽内容可以是文字, 模版代码, 甚至组件, 都是可以的
+
+**编译作用域**
+
+当你想在一个插槽中使用数据时, 例如:
+
+```js
+<navigation-link url="/profile">
+  Logged in as {{ user.name }}
+</navigation-link>
+```
+
+该插槽跟模板的其它地方一样可以访问相同的实例 property(也就是相同的作用域), 而不能访问 navigation-link 的作用域,例如 url 是访问不到的:
+
+**后备内容**
+
+**具名插槽**
+
+有时我们需要多个插槽,例如对于一个带有如下模版的 base-layout 组件
+
+
+```js
+<div class="container">
+  <header>
+    <!-- 我们希望把页头放这里 -->
+  </header>
+  <main>
+    <!-- 我们希望把主要内容放这里 -->
+  </main>
+  <footer>
+    <!-- 我们希望把页脚放这里 -->
+  </footer>
+</div>
+
+```
+
+
+对于这样的情况,  slot 元素有一个特殊的 attribute: name 这个 
+
+> 注意 v-slot只能添加在 template 上
+
+
+**作用域插槽**
+
+有时让插槽内容能够访问子组件中才有的数据是很有用的. 例如, 设想一个带有如下模版的 current-user 组件
+
+```js
+
+<span>
+  <slot>{{ user.lastName }}</slot>
+</span>
+
+```
+
+我们可能想换掉备用的内容, 用名而非姓来显示.如下:
+
+```js
+<current-user>
+  {{ user.firstName }}
+</current-user>
+
+```
+
+然而上述代码不会正常工作，因为只有 current-user 组件可以访问到 user，而我们提供的内容是在父级渲染的。
+
+为了让 user 在父级的插槽内容中可用, 我们可以将 user 作为 slot 元素的 一个 attribute 绑定上去
+
+```js
+
+<span>
+  <slot v-bind:user="user">
+    {{ user.lastName }}
+  </slot>
+</span>
+
+```
+
+
+绑定在 slot 元素上的 attribute 被称为 插槽 prop. 现在在父级作用域中, 我们可以使用带值的 v-slot 来定义我们提供的插槽 prop 的名字
+
+```js
+<current-user>
+  <template v-slot:default="slotProps">
+    {{ slotProps.user.firstName }}
+  </template>
+</current-user>
+
+```
+
+
+在这个例子中, 我们选择将包含所有插槽 prop 的对象命名为 slotProps, 但你也可以使用任意你喜欢的名字
+
+
+
+**独占默认插槽的缩写语法**
+
+```js
+<current-user v-slot="slotProps">
+  {{ slotProps.user.firstName }}
+</current-user>
+
+```
+
+
+**解构插槽 Prop**
+
+作用域插槽的内部工作原理是将你的插槽内容包裹在一个拥有单个参数的函数里:
+
+
+```js
+function (slotProps) {
+  // 插槽内容
+}
+
+```
+
+
+这意味着 v-slot 的值实际上可以是任何能够作为函数定义中的参数的 JavaScript 表达式。所以在支持的环境下 (单文件组件或现代浏览器)，你也可以使用 ES2015 解构来传入具体的插槽 prop，如下：
+
+```js
+<current-user v-slot="{ user }">
+  {{ user.firstName }}
+</current-user>
+
+```
+
+这样可以使模板更简洁，尤其是在该插槽提供了多个 prop 的时候。它同样开启了 prop 重命名等其它可能，例如将 user 重命名为 person：
+
+```js
+<current-user v-slot="{ user: person }">
+  {{ person.firstName }}
+</current-user>
+```
+你甚至可以定义后备内容，用于插槽 prop 是 undefined 的情形：
+
+```js
+<current-user v-slot="{ user = { firstName: 'Guest' } }">
+  {{ user.firstName }}
+</current-user>
+
+```
+
+**动态插槽名**
+
+
+动态指令参数也可以用在 v-slot 上, 来定义动态的插槽名:
+
+```js
+  <base-layout>
+  <template v-slot:[dynamicSlotName]>
+    ...
+  </template>
+</base-layout>
+```
+
+**具名插槽的缩写**
+
+跟 v-on 和 v-bind 一样, v-slot 也有缩写, 即把参数之前的所有内容(v-slot:)替换为 字符 #, 例如 v-slot:header 可以被重写为 #header
+
+
+```js
+<base-layout>
+  <template #header>
+    <h1>Here might be a page title</h1>
+  </template>
+
+  <p>A paragraph for the main content.</p>
+  <p>And another one.</p>
+
+  <template #footer>
+    <p>Here's some contact info</p>
+  </template>
+</base-layout>
+
+```
+
+然而，和其它指令一样，该缩写只在其有参数的时候才可用。这意味着以下语法是无效的：
+
+```js
+<!-- 这样会触发一个警告 -->
+<current-user #="{ user }">
+  {{ user.firstName }}
+</current-user>
+
+```
+如果你希望使用缩写的话，你必须始终以明确插槽名取而代之：
+
+```js
+<current-user #default="{ user }">
+  {{ user.firstName }}
+</current-user>
+
+```
+
+**其它示例**
+
+插槽 prop 允许我们将插槽转换为可复用的模板，这些模板可以基于输入的 prop 渲染出不同的内容。这在设计封装数据逻辑同时允许父级组件自定义部分布局的可复用组件时是最有用的。
+
+例如,我们要实现一个  todo-list 组件, 它是一个列表且包含布局和过滤逻辑
+
+
+```js
+<ul>
+  <li
+    v-for="todo in filteredTodos"
+    v-bind:key="todo.id"
+  >
+    {{ todo.text }}
+  </li>
+</ul>
+
+```
+
+我们可以将每个 todo 作为父级组件的插槽, 以此通过父级组件对其进行控制. 然后将 todo 作为 一个插槽 prop 进行绑定
+
+
+```js
+<ul>
+  <li
+    v-for="todo in filteredTodos"
+    v-bind:key="todo.id"
+  >
+    <!--
+    我们为每个 todo 准备了一个插槽，
+    将 `todo` 对象作为一个插槽的 prop 传入。
+    -->
+    <slot name="todo" v-bind:todo="todo">
+      <!-- 后备内容 -->
+      {{ todo.text }}
+    </slot>
+  </li>
+</ul>
+
+```
+
+现在当我们使用 <todo-list> 组件的时候，我们可以选择为 todo 定义一个不一样的 <template> 作为替代方案，并且可以从子组件获取数据：
+
+
+```js
+
+<todo-list v-bind:todos="todos">
+  <template v-slot:todo="{ todo }">
+    <span v-if="todo.isComplete">✓</span>
+    {{ todo.text }}
+  </template>
+</todo-list>
+
+```
+
+**废弃的语法**
+带有 slot attribute 的具名插槽
+带有 slot-scope attribute 的作用域插槽
+
+
+## 动态组件 & 异步组件
+
+**动态组件**
+
+我们之前在一个多标签的界面中使用 is attribute 来切换不同的组件:
+
+```js
+<component v-bind:is="currentTabComponent"></component>
+
+```
+
+当在这些组件之间切换的时候，你有时会想保持这些组件的状态，以避免反复重新渲染导致的性能问题。例如我们来展开说一说这个多标签界面：
+
+
+你会注意到，如果你选择了一篇文章，切换到 Archive 标签，然后再切换回 Posts，是不会继续展示你之前选择的文章的。这是因为你每次切换新标签的时候，Vue 都创建了一个新的 currentTabComponent 实例。
+
+重新创建动态组件的行为通常是非常有用的，但是在这个案例中，我们更希望那些标签的组件实例能够被在它们第一次被创建的时候缓存下来。为了解决这个问题，我们可以用一个 <keep-alive> 元素将其动态组件包裹起来。
+
+```js
+<!-- 失活的组件将会被缓存！-->
+<keep-alive>
+  <component v-bind:is="currentTabComponent"></component>
+</keep-alive>
+
+```
+
+
+> 注意这个 keep-alive 要求被切换到的组件都有自己的名字, 无论是通过组件的 name 选项还是局部/全局注册
+
+
+**异步组件** 
+
+在大型应用中, 我们可能需要将应用分割成小一些的代码块,并且只在需要的时候才从服务器加载一个模块, 为了简化, Vue 允许你以一个工厂函数的方式定义你的组件, 这个工厂函数会异步解析你的组件定义.  Vue 只有在这个组件需要被渲染的时候才会触发该工厂函数, 且会把结果缓存起来供未来重渲染.例如:
+
+
+处理加载状态:
+这里的异步组件工厂函数也可以返回一个如下格式的对象:
+
+```js
+const AsyncComponent = () => ({
+  // 需要加载的组件 (应该是一个 `Promise` 对象)
+  component: import('./MyComponent.vue'),
+  // 异步组件加载时使用的组件
+  loading: LoadingComponent,
+  // 加载失败时使用的组件
+  error: ErrorComponent,
+  // 展示加载时组件的延时时间。默认值是 200 (毫秒)
+  delay: 200,
+  // 如果提供了超时时间且组件加载也超时了，
+  // 则使用加载失败时使用的组件。默认值是：`Infinity`
+  timeout: 3000
+})
+
+```
+
+
+## 处理边界情况
+
+访问元素 & 组件
+
+在绝大多数情况下, 我们最好不要触达另一个组件实例内部或手动操作 DOM 元素, 不过也确实在一些情况下做这些事情是合适的
+
+1.访问根实例
+
+```js
+// Vue 根实例
+new Vue({
+  data: {
+    foo: 1
+  },
+  computed: {
+    bar: function () { /* ... */ }
+  },
+  methods: {
+    baz: function () { /* ... */ }
+  }
+})
+
+```
+
+所有的子组件都可以将这个实例作为一个全局 store 来访问或使用
+
+```js
+// 获取根组件的数据
+this.$root.foo
+
+// 写入根组件的数据
+this.$root.foo = 2
+
+// 访问根组件的计算属性
+this.$root.bar
+
+// 调用根组件的方法
+this.$root.baz()
+
+```
+
+> 对于 demo 或非常小型的有少量组件的应用来说这是很方便的. 不过这个模式扩展到中大型应用来说就不然了, 因此在绝大数情况下, 强烈推荐使用  Vuex 来管理应用的状态
+
+
+2. 访问父级组件实例
+和 $root 类似，$parent property 可以用来从一个子组件访问父组件的实例。它提供了一种机会，可以在后期随时触达父级组件，以替代将数据以 prop 的方式传入子组件的方式。
+
+>在绝大多数情况下，触达父级组件会使得你的应用更难调试和理解，尤其是当你变更了父级组件的数据的时候。当我们稍后回看那个组件的时候，很难找出那个变更是从哪里发起的。
+
+另外在一些可能适当的时候，你需要特别地共享一些组件库。举个例子，在和 JavaScript API 进行交互而不渲染 HTML 的抽象组件内，诸如这些假设性的 Google 地图组件一样：
+
+```js
+
+<google-map>
+  <google-map-markers v-bind:places="iceCreamShops"></google-map-markers>
+</google-map>
+
+```
+
+
+3. 访问子组件实例或子元素
+
+4. 依赖注入
+
+
+在此之前, 在我们描述访问父级组件实例的时候, 展示过一个类似这样的例子:
+
+```js
+
+<google-map>
+  <google-map-region v-bind:shape="cityBoundaries">
+    <google-map-markers v-bind:places="iceCreamShops"></google-map-markers>
+  </google-map-region>
+</google-map>
+```
+
+在这个组件里，所有 google-map 的后代都需要访问一个 getMap 方法，以便知道要跟哪个地图进行交互。不幸的是，使用 $parent property 无法很好的扩展到更深层级的嵌套组件上。这也是依赖注入的用武之地，它用到了两个新的实例选项：provide 和 inject。
+
+provide 选项允许我们指定我们想要提供给后代组件的数据/方法。在这个例子中，就是 google-map 内部的 getMap 方法：
+
+```js
+provide: function () {
+  return {
+    getMap: this.getMap
+  }
+}
+
+```
+然后在任何后代组件里，我们都可以使用 inject 选项来接收指定的我们想要添加在这个实例上的 property：
+
+```js
+inject: ['getMap']
+
+```
+
+你可以在这里看到完整的示例。相比 $parent 来说，这个用法可以让我们在任意后代组件中访问 getMap，而不需要暴露整个 google-map 实例。这允许我们更好的持续研发该组件，而不需要担心我们可能会改变/移除一些子组件依赖的东西。同时这些组件之间的接口是始终明确定义的，就和 props 一样。
+
+实际上，你可以把依赖注入看作一部分“大范围有效的 prop”，除了：
+ * 祖先组件不需要知道哪些后代组件使用它提供的 property
+ * 后代组件不需要知道被注入的 property 来自哪里
+
+>然而，依赖注入还是有负面影响的。它将你应用程序中的组件与它们当前的组织方式耦合起来，使重构变得更加困难。同时所提供的 property 是非响应式的。这是出于设计的考虑，因为使用它们来创建一个中心化规模化的数据跟使用 $root做这件事都是不够好的。如果你想要共享的这个 property 是你的应用特有的，而不是通用化的，或者如果你想在祖先组件中更新所提供的数据，那么这意味着你可能需要换用一个像 Vuex 这样真正的状态管理方案了。
+
+
+** 
+
+
+
+
+## 过渡 & 动画
+
+
+Vue 在插入, 更新或移除 DOM 时, 提供了多种不同方式的应用过渡效果, 包括以下工具:
+
+  * 在 css 过渡和动画中自动应用 class
+  * 可以配合使用第三方 css 动画库, 如 animate.css
+  * 在过渡钩子函数中使用 js 直接操作 DOM
+  * 可以配合使用第三方 js 动画库,  如 velocity.js
+
+在这里,我们只会讲到进入 ,离开和列表的过渡, 你也可以看下一节的管理过渡状态
+
+**单元素/组件的过渡
+
+Vue 提供了 transition 的封装组件,在下列情形中, 可以给任何元素和组件添加进入/离开过渡
+* 条件渲染(使用 v-if)
+* 条件展示(使用 v-show)
+* 动态组件
+* 组件根节点
+
+这里是一个典型的例子:
+
+```js
+<div id="demo">
+  <button v-on:click="show = !show">
+    Toggle
+  </button>
+  <transition name="fade">
+    <p v-if="show">hello</p>
+  </transition>
+</div>
+```
+
+```js
+new Vue({
+  el: '#demo',
+  data: {
+    show: true
+  }
+})
+
+```
+
+```js
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .5s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+}
+
+```
+当插入或删除包含在 transition 组件中的元素时, Vue 将会做以下处理:
+1. 自动嗅探目标元素是否应用了 css 过渡或动画, 如果是, 在恰当的时机添加/删除 css 类名.
+2. 如果过度组件提供了 js 钩子函数, 这些钩子函数将在恰当的时机被调用
+3. 如果没有找到 js 钩子并且也没有检测到 css 过渡 /动画, DOM 操作(插入/删除)在下一帧中立即执行
+
+
+过渡的类名:
+
+
+## 可复用性 & 组合
+
+混入(mixin) 提供了一种非常灵活的方式,来分发 Vue 组件中的可复用功能. 一个混入对象可以包含任意组件选项.
+当组件使用混入对象时, 所有混入对象的选项讲呗
+
+
+
+## 混入
+
+**基础**
+混入提供了一种非常灵活的方式, 来分发 Vue 组件中的可复用功能. 一个混入对象可以包含任意组件选项. 当组件使用混入对象时, 所有混入对象的选项将被"混合"进入该组件本身的选项.
+例如:
+```js
+ var myMixin = {
+  created:function(){
+    this.hello()
+  },
+  methods:{
+    hello:function(){
+      console.log("hello from mixin!")
+    }
+  }
+ }
+//定义一个使用混入对象的组件
+
+var Component = Vue.extend({
+  mixins: [myMixin]
+})
+
+var component = new Component() // => "hello from mixin!"
+
+```
+
+
+**选项合并**
+
+当组件和混入对象含有同名选项时,这些选项将以适当的方式进行"合并"
+比如,数据对象在内部会进行递归合并, 并在发生冲突时以数组数据优先.
+
+```js
+var mixin = {
+  data: function () {
+    return {
+      message: 'hello',
+      foo: 'abc'
+    }
+  }
+}
+
+new Vue({
+  mixins: [mixin],
+  data: function () {
+    return {
+      message: 'goodbye',
+      bar: 'def'
+    }
+  },
+  created: function () {
+    console.log(this.$data)
+    // => { message: "goodbye", foo: "abc", bar: "def" }
+  }
+})
+
+```
+同名钩子函数将合并为一个数组,因此都将被调用. 另外, 混入对象的钩子将在组件自身钩子之前调用.
+
+
+```js
+var mixin = {
+  created: function () {
+    console.log('混入对象的钩子被调用')
+  }
+}
+
+new Vue({
+  mixins: [mixin],
+  created: function () {
+    console.log('组件钩子被调用')
+  }
+})
+
+// => "混入对象的钩子被调用"
+// => "组件钩子被调用"
+
+```
+什么时机使用混入呢 ?
+
+值为对象的选项, 例如 methods, components 和 directives, 将被合并为同一个对象, 两个对象键名冲突时,取组件对象的键值对.
+
+
+```js
+
+var mixin = {
+  methods: {
+    foo: function () {
+      console.log('foo')
+    },
+    conflicting: function () {
+      console.log('from mixin')
+    }
+  }
+}
+
+
+var vm = new Vue({
+  mixins: [mixin],
+  methods: {
+    bar: function () {
+      console.log('bar')
+    },
+    conflicting: function () {
+      console.log('from self')
+    }
+  }
+})
+
+vm.foo() // => "foo"
+vm.bar() // => "bar"
+vm.conflicting() // => "from self"
+```
+
+注意: Vue.extend() 也使用同样的策略进行合并.
+
+
+
+
+
 
 
 
@@ -1083,6 +1877,11 @@ Vue-cli, vuex ,vuerouter(已经基本掌握) , axios , vue   全家桶 ,npm
 
 #### Vue 组件如何拆分
 
+
+### Vue是如何单向数据流的
+
+
+每个子组件都是一个单独的单个, 组件的树形网络关系, 是解析时确定的  比如 parent ,children 
 
 
 
