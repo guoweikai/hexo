@@ -1768,7 +1768,6 @@ vm.conflicting() // => "from self"
 
 
 
-
 # api
 
 **el**
