@@ -1390,7 +1390,7 @@ function (slotProps) {
 
 ```
 
-现在当我们使用 <todo-list> 组件的时候，我们可以选择为 todo 定义一个不一样的 <template> 作为替代方案，并且可以从子组件获取数据：
+现在当我们使用 todo-list 组件的时候，我们可以选择为 todo 定义一个不一样的 template 作为替代方案，并且可以从子组件获取数据：
 
 
 ```js
