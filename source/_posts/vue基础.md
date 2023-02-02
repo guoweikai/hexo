@@ -2004,6 +2004,174 @@ createElement(
 
 有一点要注意: 正如 v-bind:class 和 v-bind:style 在模板语法中会被特别对待一样, 它们在 VNode 数据对象中也有对应的顶层字段, 该对象也允许你绑定普通的 HTML attribute, 也允许绑定如 innerHTML 这样的 DOM property (这会覆盖 v-html指令)
 
+
+```js
+
+{
+  // 与`v-bind:class` 的 API 相同
+  //  接受一个字符串, 对象或字符串和对象组成的数组
+  `class`:{
+    foo:true,
+    bar:false
+  },
+  // 与 `v-bind:style` 的 API 相同,
+  // 接受一个字符串, 对象, 或者对象组成的数组
+  style:{
+    color:'red',
+    fontSize:'14px'
+  },
+  //普通的 HTML attribute
+
+  attrs:{
+    id:'foo'
+  },
+  // 组件 prop
+  props:{
+    myProp:'bar'
+  },
+  domProps:{
+    innerHTML:'baz'
+  }
+  // 事件监听器在 `on`内,
+  // 但不再支持如 'v-on:keyup.enter' 这样的修饰器
+  // 需要在处理函数中手动检查 keyCode
+  on:{
+    click:this.clickHandler
+  },
+  nativeOn:{
+    click:this.nativeClickhandler
+  }
+  // 自定义指令. 注意,你无法对 'binding'中的 'oldValue'
+  //赋值,因为 Vue 已经自动为你进行了同步
+  directives:[{
+    name:'my-custom-directive',
+    value:'2',
+    expression:'1+1',
+    arg:'foo',
+    modifiers:{
+      bar:true
+    }
+  }],
+  scopedSlots:{
+    default:props => createElement('span', props.text)
+  }
+// 如果组件是其它组件的子组件, 需要为插槽指定名称
+
+slot:'name-of-slot',
+// 其它特殊顶层 property
+key:'myKey',
+ref:'myRef',
+// 如果你在渲染函数中给多个元素都应用了相同的 Ref 名,
+// nam `$refs.myRef` 就变成了一个数组
+
+RefInFor:true
+},
+
+```
+
+
+**约束**
+
+
+## 内在
+
+**深入响应式原理**
+
+Vue 最独特的特性之一, 是其非侵入性的响应式系统,数据模型仅仅是普通的 js 对象. 而当你修改它们时, 视图会进行更新, 这使得状态管理非常简单直接, 不过理解其工作原理同样重要,这样可以跪地一些常见的问题.
+
+1. 如何追踪变化
+
+当你把一个普通的 js 对象传入 Vue 实例作为 data 选项, Vue 将遍历此对象所有的 property, 并使用 object.defineProperty 把这些 property 全部转为 getter/setter. Object.defineProperty 把这些 property 全部转为 getter/setter Object.defineProperty 是 es5 中一个无法 shim 的特性, 这也就是 Vue 不支持 IE8 以及更低版本浏览器的原因.
+
+这个 getter/ setter 对用户来说是不可见的. 但是在内部它们让 Vue 能够追踪依赖, 在 property 被访问和修改时通知变更.
+
+每个组件实例都对应一个 watcher 实例, 它会在组件渲染啊的过程中把"接触"过的数据 property 记录为依赖. 之后当依赖项的 setter 触发时, 会通知 watcher,从而使它关联的组件重新渲染.
+
+
+> 响应式原理自己理解
+> 数据劫持和观察者模式
+> 1. 数据添加 getter 和 setter 方法 
+> 2. 编译模版,引用数据, new Watcher() , Watcher 放假的 Dep.target 上
+> 3. 因为数据被引用 getter 方法, 可以获取到 Watcher 实例, 添加到 dep 的数组上
+> 4. 数据更新调用 setter 方法, 进而通知 watcher 形成关联关系
+
+
+其实在 Vue 中 初始化渲染
+
+
+**异步更新队列**
+Vue 在更新 DOM 时是异步执行的. 只要侦听到数据变化, Vue 将开启一个队列, 并缓存在同一事件循环中发生的所有数据变更. 如果同一个 watcher 被多次触发, 只会被推入到队列中移除, 这种在缓冲时去除重复数据对于避免不必要的技术和 DOM 操作是非常重要的. 然后, 在下一个的事件循环"tick"中,Vue 刷新队列并执行实际(已去重的)工作. vue 在内部对异步队列尝试使用原来的 Promise.then, MutationObserver 和 setIMmediate, 如果执行环境不支持,则会采用 setTimeout(fn,0)代替.
+例如: 当你设置 vm.someData = "new Value" 该组件不会立即重新渲染, 当刷新列表时, 组件会在下一个事件循环'tick'中更新. 多数情况我们不需要关心这个过程, 但是如果你想基于更新后的 DOM 状态来做点什么,这就可能会有些棘手. 虽然 Vue.js 通常鼓励开发人员使用"数据驱动" 的方式思考, 避免直接接触 DOM, 但是有时候我们必须要这么做, 为了在数据变化之后等待 Vue 完成更新 DOM,可以在数据变化之后立即使用 Vue.nextTick(callback). 这样回调函数将在 DOM 更新完成后被调用. 例如
+
+```js
+  <div id="example">{{message}}</div>
+```
+
+```js
+ var  vm = new Vue({
+  el:'#example',
+  data:{
+    message:'123'
+  }
+ })
+vm.message = 'new message' // 更改数据
+vm.$el.textContent === 'new message' // false
+Vue.nextTick(function () {
+  vm.$el.textContent === 'new message' // true
+})
+```
+在组件内使用 vm.$nextTick() 实例方法特别方便, 因为它不需要全局 Vue, 并且回调函数中的 this 将自动绑定到当前的 Vue 实例上:
+
+```js
+Vue.component('example',{
+  template: '<span>{{ message }}</span>',
+  data:function(){
+    return{
+      message:'未更新'
+    }
+  },
+  methods:{
+    updateMessage:function(){
+      this.message ="以更新"
+      console.log(this.$el.textContent) // =>'未更新'
+      this.$nextTick(function(){
+        console.log(this.$el.textContent) // => '已更新'
+      })
+    }
+  }
+})
+
+```
+
+因为 $nextTick() 返回一个 Promise 对象, 所以你可以使用新 的 async /await 语法完成相同的事件
+
+```js
+methods: {
+  updateMessage: async function () {
+    this.message = '已更新'
+    console.log(this.$el.textContent) // => '未更新'
+    await this.$nextTick()
+    console.log(this.$el.textContent) // => '已更新'
+  }
+}
+
+```
+
+**检测变化的注意事项**
+
+由于 js 的限制, Vue 不能检查数组和对象的变化,
+
+
+
+**异步更新队列**
+
+
+
+
+
+
+
+
 # api
 
 **el**
