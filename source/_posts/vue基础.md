@@ -4,9 +4,10 @@ date: 2022-05-14 09:47:44
 tags:
 ---
 # 基础
-
-## Vue.js 是什么?
-   Vue 是一套用于构建用户界面的渐进式框架
+## 介绍
+   **Vue.js 是什么?**
+    Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
+   **声明式渲染
 ## Vue 实例
 **创建一个实例**
   每一个 Vue 应用都是通过用 Vue 函数创建一个新的 Vue 实例开始的:
@@ -1758,15 +1759,250 @@ vm.conflicting() // => "from self"
 
 注意: Vue.extend() 也使用同样的策略进行合并.
 
+**全局混入**
+
+混入也可以进行全局注册. 使用时格外小心! 一旦使用全局混入, 它将影响每一个之后闯将的 Vue 实例. 使用恰当时, 这可以用为自定义选项注入处理逻辑.
+
+```js
+// 为自定义的选项 'myOption' 注入一个处理器。
+Vue.mixin({
+  created: function () {
+    var myOption = this.$options.myOption
+    if (myOption) {
+      console.log(myOption)
+    }
+  }
+})
+
+new Vue({
+  myOption: 'hello!'
+})
+// => "hello!"
+
+```
+
+
+**自定义选项合并策略**
+
+
+自定义选项将使用默认策略, 即简单地覆盖已有值. 如果想让自定义选项以自定义逻辑合并, 可以向 Vue.config.optionMergesStrategies 添加一个函数:
+
+```js
+Vue.config.optionMergeStrategies.myOption = function (toVal, fromVal) {
+  // 返回合并后的值
+}
+
+```
+
+对于多数值为对象的选项, 可以使用与 methods 相同的合并策略:
+
+
+## 自定义指令
+
+**简介**
+
+除了核心功能默认内置的指令(v-model 和 v-show), Vue 也允许注册自定义指令. 注意, 在Vue2.0 中,代码复用和抽象的主要形式是组件,然而,有的情况下, 你仍然需要对普通 DOM 元素进行底层操作,这时候会用到自定义指令,举个聚焦输入框的例子,如下
+
+
+当页面加载时,该元素将获取焦点(注意: autofocus 在移动版 safari 上不工作). 事实上, 只要你在打开这个页面后还没点击过任何内容, 这个输入框就应当还是处于聚焦状态.现在让我们用指令来实现这个功能
+
+```js
+// 注册一个全局自定义指令 `v-focus`
+Vue.directive('focus', {
+  // 当被绑定的元素插入到 DOM 中时……
+  inserted: function (el) {
+    // 聚焦元素
+    el.focus()
+  }
+})
+
+```
+
+如果想注册局部指令, 组件中也接受一个 directives 的选项
+
+
+```js
+directives: {
+  focus: {
+    // 指令的定义
+    inserted: function (el) {
+      el.focus()
+    }
+  }
+}
+
+```
+
+然后你可以在模板中任何元素上使用新的 v-focus property，如下：
+
+<input v-focus>
+
+**钩子函数** 
+
+一个指令定义对象可以提供如何几个钩子函数(均为可选)
+
+* bind: 只调用一次, 指令第一次绑定到元素时调用, 在这里可以进行一次性的初始化设置
+* inserted: 被绑定元素插入父节点时调用(仅保证父节点存在, 但不一定已被插入文档中)
+* udpate: 所在组件的 vnode 更新时调用, 但是可能发生在其子 vnode 更新之前,指令的值可能发生改变, 也可能没有. 但是你可以通过比较更新前后的值来忽略不必要的模版更新
 
 
 
+## 渲染函数 & jsx
+
+**基础** 
+
+Vue 推荐在绝大多数情况下使用 模版来创建你的 HTML, 然而在一些场景中, 你真的需要 js 的完全编程的能力, 这时你可以用渲染函数, 它比模版更接近编译器
+
+```js
+<h1>
+  <a name="hello-world" href="#hello-world">
+    Hello world!
+  </a>
+</h1>
+```
+
+对于上面的 HTML，你决定这样定义组件接口：
+
+```js
+<anchored-heading :level="1">Hello world!</anchored-heading>
+
+```
+
+当开始写一个只能通过 level prop 动态生成标题(heading)的组件时, 你可能很快想到这样实现
 
 
+```js
+<script type ="text/x-template" id ="anchored-heading-template">
+  <h1 v-if="level === 1">
+    <slot></slot>
+  </h1>
+  <h2 v-else-if="level === 2">
+    <slot></slot>
+  </h2>
+  <h3 v-else-if="level === 3">
+    <slot></slot>
+  </h3>
+  <h4 v-else-if="level === 4">
+    <slot></slot>
+  </h4>
+  <h5 v-else-if="level === 5">
+    <slot></slot>
+  </h5>
+  <h6 v-else-if="level === 6">
+    <slot></slot>
+  </h6>
+</script>
+```
+
+这里用模板并不是最好的选择, 不但代码冗长, 而且在每一个级别的标题中重复书写了 slot,在要插入锚点元素时还要再次重复.
+
+虽然模版在大多数情况中都非常好用, 但是显然在这里它就不适合了, 那么, 我们来尝试使用 render 函数重写上面的例子:
+
+```js
+Vue.component('anchored-heading', {
+  render: function (createElement) {
+    return createElement(
+      'h' + this.level,   // 标签名称
+      this.$slots.default // 子节点数组
+    )
+  },
+  props: {
+    level: {
+      type: Number,
+      required: true
+    }
+  }
+})
+
+```
+
+看起来简单多了! 这样代码精简很多,但是需要非常熟悉 Vue 的实例 property. 在这里例子中, 你需要知道, 向组件中传递不带 v-slot 指令的子节点时, 比如 anchored-heading中的 Hello world, 这些子节点被存储在组件实例中 $slots.default 中.
 
 
+**节点, 树以及虚拟 DOM**
+
+在深入渲染函数之前, 了解一些浏览器的工作原理是很重要的.以下面这段 HTML 为例:
+
+```js
+ <div>
+  <h1>My title</h1>
+  Some text content
+  <!-- TODO: Add tagline -->
+</div>
+
+```
+当浏览器读到这些代码时，它会建立一个“DOM 节点”树来保持追踪所有内容，如同你会画一张家谱树来追踪家庭成员的发展一样。
+
+上述 HTML 对应的 DOM 节点数如下图所示:
+
+每个元素都是一个节点。每段文字也是一个节点。甚至注释也都是节点。一个节点就是页面的一个部分。就像家谱树一样，每个节点都可以有孩子节点 (也就是说每个部分可以包含其它的一些部分)。
+
+高效地更新所有这些节点会是比较困难的，不过所幸你不必手动完成这个工作。你只需要告诉 Vue 你希望页面上的 HTML 是什么，这可以是在一个模板里：
+
+```js
+<h1>{{ blogTitle }}</h1>
+```
+或者一个渲染函数里
 
 
+```js
+
+  render:function (createElement) {
+      return createElement('h1', this.blogTitle)
+
+  }
+```
+
+在这两种情况下, Vue 都会自动保持页面的更新, 即便 blogTitle 发生了改变
+
+**虚拟 DOM**
+
+Vue 通过建立一个虚拟 DOM 来追踪自己要如何改变真实 DOM, 请仔细看这行代码
+
+```js
+return createElement('h1', this.blogTitle)
+
+```
+
+createElement 到底会返回什么呢? 其实不是一个实际的 DOM 元素. 它更准备的名字可能是 createNodeDescription. 因为它所包含的信息回告诉 Vue 页面上需要渲染什么样的节点, 包括及其子节点的描述信息. 我们吧这样的节点描述为"虚拟节点", 也常简写它为 "VNode". "虚拟 DOM" 是我们对由 Vue 组件树建立起来的整个 VNode 树的称呼.
+
+**createElement 参数**
+
+接下来你需要熟悉的是如何在 createElement 函数中使用模版中的哪些功能. 这里是 createElement 接受的参数:
+
+```js
+
+//  这一块不是很明白
+@returns {VNode}
+
+createElement(
+  //{String | Object | Function}
+  'div',
+  //{Object}
+  // 一个与模板中 attribute 对应的数据对象. 可选
+  {
+    // (详情见一下节)
+  }
+
+  //{String | Array}
+  // 子级虚拟节点 (VNodes),由 `createElement()`构建而成
+  // 也可以使用字符串来生成"文本虚拟节点", 可选.
+  [
+    '先写一些文字',
+    createElement('h1','一则头条'),
+    createElement(MyComponent,{
+       props:{
+        someProp:'foobar'
+       }
+    })
+  ]
+)
+
+```
+
+**深入数据对象**
+
+有一点要注意: 正如 v-bind:class 和 v-bind:style 在模板语法中会被特别对待一样, 它们在 VNode 数据对象中也有对应的顶层字段, 该对象也允许你绑定普通的 HTML attribute, 也允许绑定如 innerHTML 这样的 DOM property (这会覆盖 v-html指令)
 
 # api
 
