@@ -308,10 +308,67 @@ computed 的依赖收集是借助 vue 的 watcher 来实现的, 我们称为 com
   现在再运行 vm.fullName = 'John Doe' 时，setter 会被调用，vm.firstName 和 vm.lastName 也会相应地被更新。
 **侦听器**
 
-虽然计算属性在大多数情况下更适合, 但有时也需要一个自定义的侦听器, 这就是为什么 Vue 通过 watch 选项提供了一个更通用的方法, 来响应数据的变化, 当需要在数据变化时执行异步或开销比较大的操作时, 这个方式是最用的
+虽然计算属性在大多数情况下更适合, 但有时也需要一个自定义的侦听器, 这就是为什么 Vue 通过 watch 选项提供了一个更通用的方法, 来响应数据的变化, 当需要在数据变化时执行异步或开销比较大的操作时, 这个方式是最用的.
+例如:
+```js
+<div id="watch-example">
+<p>
+  Ask a yes/no question:
+  <input v-model="question">
+</p>
+<p>{{ answer }}</p>
+</div>
+```
+```js
+<!-- 因为 AJAX 库和通用工具的生态已经相当丰富，Vue 核心代码没有重复 -->
+<!-- 提供这些功能以保持精简。这也可以让你自由选择自己更熟悉的工具。 -->
+<script src="https://cdn.jsdelivr.net/npm/axios@0.12.0/dist/axios.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.13.1/lodash.min.js"></script>
+<script>
+var watchExampleVM = new Vue({
+el: '#watch-example',
+data: {
+  question: '',
+  answer: 'I cannot give you an answer until you ask a question!'
+},
+watch: {
+  // 如果 `question` 发生改变，这个函数就会运行
+  question: function (newQuestion, oldQuestion) {
+    this.answer = 'Waiting for you to stop typing...'
+    this.debouncedGetAnswer()
+  }
+},
+created: function () {
+  // `_.debounce` 是一个通过 Lodash 限制操作频率的函数。
+  // 在这个例子中，我们希望限制访问 yesno.wtf/api 的频率
+  // AJAX 请求直到用户输入完毕才会发出。想要了解更多关于
+  // `_.debounce` 函数 (及其近亲 `_.throttle`) 的知识，
+  // 请参考：https://lodash.com/docs#debounce
+  this.debouncedGetAnswer = _.debounce(this.getAnswer, 500)
+},
+methods: {
+  getAnswer: function () {
+    if (this.question.indexOf('?') === -1) {
+      this.answer = 'Questions usually contain a question mark. ;-)'
+      return
+    }
+    this.answer = 'Thinking...'
+    var vm = this
+    axios.get('https://yesno.wtf/api')
+      .then(function (response) {
+        vm.answer = _.capitalize(response.data.answer)
+      })
+      .catch(function (error) {
+        vm.answer = 'Error! Could not reach the API. ' + error
+      })
+  }
+}
+})
+</script>
+```
 
-在这个示例中, 使用 watch 选项允许我们执行异步操作, 限制我们执行该操作的频率, 并在我们得到最终结果钱, 设置中间状态,这些都是计算属性无法做到的.
-
+>在这个示例中, 使用 watch 选项允许我们执行异步操作, 限制我们执行该操作的频率, 并在我们得到最终结果钱, 设置中间状态,这些都是计算属性无法做到的.
+>除了 watch 选项之外，您还可以使用命令式的 vm.$watch API。
 
 ## Class 与 Style 绑定
 
@@ -320,8 +377,73 @@ computed 的依赖收集是借助 vue 的 watcher 来实现的, 我们称为 com
 **绑定 HTML class** 
 
 1. 对象语法
+  我们可以传给 v-bind:class. 一个对象, 以动态地切换 class
+  ```js
+  <div v-bind:class="{ active: isActive }"></div>
+  ```
+  上面的语法表示 active 这个 class 存在与否将取决于数据 property isActvie 的truthiness.
+  你可以在对象中传入更多字段来动态切换多个 class。此外，v-bind:class 指令也可以与普通的 class attribute 共存。当有如下模板：
+  ```js
+  <div
+  class="static"
+  v-bind:class="{ active: isActive, 'text-danger': hasError }"
+  ></div>
+  ```
+  和如下 data：
+
+  ```js
+  data: {
+  isActive: true,
+  hasError: false
+  }
+  ```
+  结果渲染为：
+  ```js
+    <div class="static active"></div>
+  ```
+  当 isActive 或者 hasError 变化时，class 列表将相应地更新。例如，如果 hasError 的值为 true，class 列表将变为 "static active text-danger"。
+  绑定的数据对象不必内联定义在模板里：
+  ```js
+  <div v-bind:class="classObject"></div>
+  ```
+  ```js
+  data: {
+  classObject: {
+  active: true,
+  'text-danger': false
+  }
+  }
+  ```
+  渲染的结果和上面一样。我们也可以在这里绑定一个返回对象的计算属性。这是一个常用且强大的模式：
+  ```js
+  <div v-bind:class="classObject"></div>
+  ```
+  ```js
+  data: {
+  isActive: true,
+  error: null
+  },
+  computed: {
+  classObject: function () {
+  return {
+    active: this.isActive && !this.error,
+    'text-danger': this.error && this.error.type === 'fatal'
+  }
+  }
+  }
+  ```
 
 2. 数组语法
+  我们可以把一个数组传给 v-bind:class，以应用一个 class 列表
+  ```js
+  <div v-bind:class="[activeClass, errorClass]"></div>
+  ```
+  ```js
+  data: {
+  activeClass: 'active',
+  errorClass: 'text-danger'
+  }
+  ```
 
 3. 用在组件上
 
