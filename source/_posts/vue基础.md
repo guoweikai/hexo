@@ -10,6 +10,8 @@ tags:
 Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
 
 **声明式渲染**
+**条件与循环**
+**处理用户输入**
 
 ## Vue 实例
 
@@ -21,37 +23,115 @@ Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不
   // 选项
   })
   ```
+  虽然没有完全遵循 MVVM 模型, 但是 Vue 的设计也收到了它的启发, 因此在文档中经常会使用 vm 这个变量名表示 Vue 实例.
+
+  当创建一个 Vue 实例时, 你可以传入一个**选项对象**, 这篇教程主要描述的就是如何使用这些选项来创建你想要的行为.
 
 **数据与方法**
 
   当一个 Vue 实例被创建时, 它将 data 对象中的所有 property 加入到 Vue 的响应式系统中. 当这些 property 的值发生改变时, 视图将会发生响应, 即匹配更新为新的值
+  ```js
+    //我们的数据对象 
+    var data = {a:1}
+    //该对象被加入到一个 Vue 实例中
+    var vm = new Vue({
+      data: data
+    })
+  ```
 
-**实例生命周期钩子**
+**实例生命周期钩子** 重点:
 
   每个 Vue 实例在被创建时都要经过一系列的初始化过程--- 例如, 需要设置数据监听, 编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等. 同时在这个过程中也会运行一些叫做生命周期钩子的函数, 这给了用户在不同阶段添加自己代码的机会
+
+**什么是生命周期**
+
+每个 Vue 实例在被创建时都要经过一系列的初始化过程--例如,需要设置数据监听,编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等, 同时在这个过程中也会运行一些叫做神功周期钩子的函数, 这给了用户在不同阶段添加自己的代码的机会.
+
+Vue中生命周期, 一共分为四大类, 分别是实例期,挂载期, 更新期, 销毁期, 每个周期飞卫当前周期前后. 其实简单点来说生命周期跟我们人的一生也挺相似的. 
+
+我们人一生分为出生前(实例期)，青年期(挂载期),中老年期(更新期)，死亡(销毁期)，下面见生命周期图解
+
+**生命周期图解**
+1. 实例期
+ 实例创建前(beforeCreate)
+   * 初始化一个空的 Vue 实例, data methods 等上文被初始化,可调用,但尚未开始渲染模版
+ 实例创建后(Created)
+   * Vue 实例初始化完成, data methods 都已初始化完成, 可调用.但尚未开始渲染模版
+2. 挂载期:
+  挂载前(beforeMount):
+  * 在挂载开始之前被调用, 相关的 render 函数首次被调用, 但还没有开始渲染, 该钩子在服务端渲染期间不被调用
+  * 挂载后(mounted)
+    + el 被创建的 vm.$el 替换, 并挂载到到实例上去之后调用该钩子
+    + 如果root实例挂在了一个文档内元素,当mounted被调用时,vm.$el也在文档内
+    + 该钩子在服务器端渲染期间不被调用
+3. 更新期:
+  更新前(beforeUpdate):
+   * 在数据发生改变后, DOM 倍更新之前被调用, 这里适合在现有 DOM 将要被更新之前访问它,比如移除手动添加的事件监听器
+  更新后(updated)
+   *在数据更改导致的虚拟 DOM 重新渲染和更新完毕之后被调用。 
+4. 销毁期
+   销毁期(beforeDestory)
+    * 实例销毁之前调用,在这一步, 实例仍然完全可用
+    * 该钩子在服务器渲染期间不被调用
+  销毁后(Destory)
+    * Vue 实例销毁后调用,调用后, Vue 实例指定的所有东西都会解除绑定, 所有的事件监听器都会被移除, 所有的子实例也会被销毁
+    * 该钩子在服务端渲染期间不会被调用
 
 ## 模版语法
 
   Vue.js 使用了基于 html 的模版语法, 允许开发者声明式地将 DOM 绑定至底层 Vue 实例的数据. 所有 Vue.js 的模版都是合法的 HTML, 所以能被遵循规范的浏览器和 HTML 解析器解析
-
   在底层的实现上, Vue 将模版编译成虚拟 DOM 渲染函数. 结合响应系统, Vue 能够智能地计算出最少需要重新渲染多少组件, 并把 DOM 操作次数减到最少.
 
 **插值**
 1. 文本 使用双大括号
 2. 原始 HTML
+  双大括号会将数据解释为普通文本,而非 HTMl 代码, 为了输入真正的 HTML, 你需要使用 v-html 指令
+  ```js
+  <p>Using mustaches: {{ rawHtml }}</p>
+  <p>Using v-html directive: <span v-html="rawHtml"></span></p>
+  ```
+  这个 span 的内容将会被替换成为 property 值 rawHtml，直接作为 HTML——会忽略解析 property 值中的数据绑定。注意，你不能使用 v-html 来复合局部模板，因为 Vue 不是基于字符串的模板引擎。反之，对于用户界面 (UI)，组件更适合作为可重用和可组合的基本单位。
+  > 你的站点上动态渲染的任意 HTML 可能会非常危险，因为它很容易导致 XSS 攻击。请只对可信内容使用 HTML 插值，绝不要对用户提供的内容使用插值。
 3.  Attribute 
     双大括号语法不能作用在 HTML attribute 上, 遇到这种情况应该使用 v-bind 指令
+    ```js
+    <div v-bind:id="dynamicId"></div>
+    ```
+    对于布尔 attribute (它们只要存在就意味着值为 true)，v-bind 工作起来略有不同，在这个例子中：
+    ```js
+    <button v-bind:disabled="isButtonDisabled">Button</button>
+    ```
+    如果 isButtonDisabled 的值是 null、undefined 或 false，则 disabled attribute 甚至不会被包含在渲染出来的 button 元素中。
 4. 使用 javaScript 表达式
+   迄今为止，在我们的模板中，我们一直都只绑定简单的 property 键值。但实际上，对于所有的数据绑定，Vue.js 都提供了完全的 JavaScript 表达式支持。
+    ```js
+    {{ number + 1 }}
 
+    {{ ok ? 'YES' : 'NO' }}
 
-  注意:
+    {{ message.split('').reverse().join('') }}
 
-  >模版表达式都被放在沙盒中, 只能访问全局变量的一个白名单, 如 Math 和 Date, 你不应该在模版表达式中视图访问用户定义的全局变量
+    <div v-bind:id="'list-' + id"></div>
+    ```
+    这些表达式会在所属 Vue 实例的数据作用域下作为 JavaScript 被解析。有个限制就是，每个绑定都只能包含单个表达式，所以下面的例子都不会生效。
+
+    ```js
+    <!-- 这是语句，不是表达式 -->
+    {{ var a = 1 }}
+
+    <!-- 流控制也不会生效，请使用三元表达式 -->
+    {{ if (ok) { return message } }}
+    ```
+
+   >模版表达式都被放在沙盒中, 只能访问全局变量的一个白名单, 如 Math 和 Date, 你不应该在模版表达式中视图访问用户定义的全局变量
 
 **指令**
 
 指令是带有 v- 前缀的特殊 attribute. 指令 attribute的值预期是单个 javaScript 表达式 (v-for 是例外情况, 稍后我们再讨论). 指令的职责是, 当表达式的值改变时, 将其产生的连带影响,响应地作用于 DOM, 回顾我们在介绍中看到的例子
-
+```js
+<p v-if="seen">现在你看到我了</p>
+```
+这里，v-if 指令将根据表达式 seen 的值的真假来插入/移除 <p> 元素。
 1. 参数
 
     一些指令能够接收一个参数,在指令名称之后以冒号表示. 例如, v-bind 指令可以用于响应式更新 HTML attribute
@@ -69,15 +149,45 @@ Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不
 2. 动态参数
 
 3. 修饰符
-   
+   修饰符是以半角句号. 指明的特殊后缀, 用于指出一个指令应该以特殊方式绑定, 例如, .prevent 修饰符告诉 v-on 指令对于触发的事件调用 event.preventDeafult()
+   ```js
+   <form v-on:submit.prevent="onSubmit">...</form>
+   ```
+   在接下来对 v-on 和  v-for 等功能的探索中, 你会看到修饰符的其它例子
 **缩写**
 
- 它们看起来可能与普通的 html 略有不同, 但 : 与 @ 对于 attribute 名来说都是合法字符, 在所有支持 Vue 的浏览器都能被正确地解析. 而且,它们不会出现在最终渲染的标记中
+ v- 前缀作为一种视觉提示，用来识别模板中 Vue 特定的 attribute。当你在使用 Vue.js 为现有标签添加动态行为 (dynamic behavior) 时，v- 前缀很有帮助，然而，对于一些频繁用到的指令来说，就会感到使用繁琐。同时，在构建由 Vue 管理所有模板的单页面应用程序 (SPA - single page application) 时，v- 前缀也变得没那么重要了。因此，Vue 为 v-bind 和 v-on 这两个最常用的指令，提供了特定简写：
+ 1. v-bind 缩写
+    ```js
+    <!-- 完整语法 -->
+    <a v-bind:href="url">...</a>
+
+    <!-- 缩写 -->
+    <a :href="url">...</a>
+
+    <!-- 动态参数的缩写 (2.6.0+) -->
+    <a :[key]="url"> ... </a>
+    ```
+2. v-on 缩写
+    ```js
+    <!-- 完整语法 -->
+    <a v-on:click="doSomething">...</a>
+
+    <!-- 缩写 -->
+    <a @click="doSomething">...</a>
+
+    <!-- 动态参数的缩写 (2.6.0+) -->
+    <a @[event]="doSomething"> ... </a>
+    ```
+    它们看起来可能与普通的 HTML 略有不同，但 : 与 @ 对于 attribute 名来说都是合法字符，在所有支持 Vue 的浏览器都能被正确地解析。而且，它们不会出现在最终渲染的标记中。缩写语法是完全可选的，但随着你更深入地了解它们的作用，你会庆幸拥有它们。
+ ## 计算属性和侦听器  计算属性和 侦听器是怎么实现的呢?还没理解
+**文章**
+[带你了解vue计算属性的实现原理以及vuex的实现原理](https://juejin.cn/post/6844903879310589965)
+整体流程
+computed 的依赖收集是借助 vue 的 watcher 来实现的, 我们称为 computed watcher, 每一个ji'shan
 
 
- ## 计算属性和侦听器
-
-**计算属性**
+**计算属性** 
 
  >模版内的表达式非常便利, 但是设计她们的初衷是用于简单运算的.  在模版中放入太多的逻辑会让模版过重且难以维护.
 
@@ -90,10 +200,112 @@ Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不
 
 对于任何复杂逻辑, 你都应当使用**计算属性**.
 
+1. 基础例子
+    ```js
+    <div id="example">
+    <p>Original message: "{{ message }}"</p>
+    <p>Computed reversed message: "{{ reversedMessage }}"</p>
+    </div>
+    ```
+    ```js
+    var vm = new Vue({
+    el: '#example',
+    data: {
+    message: 'Hello'
+    },
+    computed: {
+    // 计算属性的 getter
+    reversedMessage: function () {
+    // `this` 指向 vm 实例
+    return this.message.split('').reverse().join('')
+    }
+    }
+    })
+    ```
+2. 计算属性缓存 vs 方法
+  你可能已经注意到我们可以通过在表达式中调用方法来达到同样的效果：
+  ```js
+  <p>Reversed message: "{{ reversedMessage() }}"</p>
+  ```
+  ```js
+  // 在组件中
+  methods: {
+  reversedMessage: function () {
+  return this.message.split('').reverse().join('')
+  }
+  }
+  ```
+  我们可以将同一函数定义为一个方法而不是一个计算属性。两种方式的最终结果确实是完全相同的。然而，不同的是计算属性是基于它们的响应式依赖进行缓存的。只在相关响应式依赖发生改变时它们才会重新求值。这就意味着只要 message 还没有发生改变，多次访问 reversedMessage 计算属性会立即返回之前的计算结果，而不必再次执行函数
 
-1. 计算属性缓存 vs 方法
-2. 
+  这也同样意味着下面的计算属性将不再更新，因为 Date.now() 不是响应式依赖
+  ```js
+  computed: {
+  now: function () {
+  return Date.now()
+  }
+  }
+  ```
+3. 计算属性 vs 侦听属性
+   Vue 提供了一种更通用的方式来观察和响应 Vue 实例上的数据变动：侦听属性。当你有一些数据需要随着其它数据变动而变动时，你很容易滥用 watch——特别是如果你之前使用过 AngularJS。然而，通常更好的做法是使用计算属性而不是命令式的 watch 回调。细想一下这个例子
+   ```js
+   <div id="demo">{{ fullName }}</div>
+   ```
+  ```js
+  var vm = new Vue({
+  el: '#demo',
+  data: {
+  firstName: 'Foo',
+  lastName: 'Bar',
+  fullName: 'Foo Bar'
+  },
+  watch: {
+  firstName: function (val) {
+    this.fullName = val + ' ' + this.lastName
+  },
+  lastName: function (val) {
+    this.fullName = this.firstName + ' ' + val
+  }
+  }
+  })
+  ```
+  上面代码是命令式且重复的。将它与计算属性的版本进行比较：
+  ```js
+  var vm = new Vue({
+  el: '#demo',
+  data: {
+  firstName: 'Foo',
+  lastName: 'Bar'
+  },
+  computed: {
+  fullName: function () {
+    return this.firstName + ' ' + this.lastName
+  }
+  }
+  })
+  ```
+  好得多了，不是吗？
 
+4. 计算属性的 setter
+  计算属性默认只有 getter，不过在需要时你也可以提供一个 setter：
+  ```js
+  // ...
+  computed: {
+  fullName: {
+  // getter
+  get: function () {
+    return this.firstName + ' ' + this.lastName
+  },
+  // setter
+  set: function (newValue) {
+    var names = newValue.split(' ')
+    this.firstName = names[0]
+    this.lastName = names[names.length - 1]
+  }
+  }
+  }
+  // ...
+  ```
+  现在再运行 vm.fullName = 'John Doe' 时，setter 会被调用，vm.firstName 和 vm.lastName 也会相应地被更新。
 **侦听器**
 
 虽然计算属性在大多数情况下更适合, 但有时也需要一个自定义的侦听器, 这就是为什么 Vue 通过 watch 选项提供了一个更通用的方法, 来响应数据的变化, 当需要在数据变化时执行异步或开销比较大的操作时, 这个方式是最用的
@@ -1554,7 +1766,7 @@ this.$root.baz()
 
 ## 过渡 & 动画
 
-
+**概述**
 Vue 在插入, 更新或移除 DOM 时, 提供了多种不同方式的应用过渡效果, 包括以下工具:
 
   * 在 css 过渡和动画中自动应用 class
@@ -1564,7 +1776,7 @@ Vue 在插入, 更新或移除 DOM 时, 提供了多种不同方式的应用过�
 
 在这里,我们只会讲到进入 ,离开和列表的过渡, 你也可以看下一节的管理过渡状态
 
-**单元素/组件的过渡
+**单元素/组件的过渡**
 
 Vue 提供了 transition 的封装组件,在下列情形中, 可以给任何元素和组件添加进入/离开过渡
 * 条件渲染(使用 v-if)
@@ -2058,58 +2270,89 @@ Vue 最独特的特性之一, 是其非侵入性的响应式系统,数据模型�
 
 1. 如何追踪变化
 
-当你把一个普通的 js 对象传入 Vue 实例作为 data 选项, Vue 将遍历此对象所有的 property, 并使用 object.defineProperty 把这些 property 全部转为 getter/setter. Object.defineProperty 把这些 property 全部转为 getter/setter Object.defineProperty 是 es5 中一个无法 shim 的特性, 这也就是 Vue 不支持 IE8 以及更低版本浏览器的原因.
+    当你把一个普通的 js 对象传入 Vue 实例作为 data 选项, Vue 将遍历此对象所有的 property, 并使用 object.defineProperty 把这些 property 全部转为 getter/setter. Object.defineProperty 把这些 property 全部转为 getter/setter Object.defineProperty 是 es5 中一个无法 shim 的特性, 这也就是 Vue 不支持 IE8 以及更低版本浏览器的原因.
 
-这个 getter/ setter 对用户来说是不可见的. 但是在内部它们让 Vue 能够追踪依赖, 在 property 被访问和修改时通知变更.
+    这个 getter/ setter 对用户来说是不可见的. 但是在内部它们让 Vue 能够追踪依赖, 在 property 被访问和修改时通知变更.
 
-每个组件实例都对应一个 watcher 实例, 它会在组件渲染啊的过程中把"接触"过的数据 property 记录为依赖. 之后当依赖项的 setter 触发时, 会通知 watcher,从而使它关联的组件重新渲染.
+    每个组件实例都对应一个 watcher 实例, 它会在组件渲染啊的过程中把"接触"过的数据 property 记录为依赖. 之后当依赖项的 setter 触发时, 会通知 watcher,从而使它关联的组件重新渲染.
 
 
-> 响应式原理自己理解
-> 数据劫持和观察者模式
-> 1. 数据添加 getter 和 setter 方法 
-> 2. 编译模版,引用数据, new Watcher() , Watcher 放假的 Dep.target 上
-> 3. 因为数据被引用 getter 方法, 可以获取到 Watcher 实例, 添加到 dep 的数组上
-> 4. 数据更新调用 setter 方法, 进而通知 watcher 形成关联关系
+    > 响应式原理自己理解
+    > 数据劫持和观察者模式
+    > 1. 数据添加 getter 和 setter 方法 
+    > 2. 编译模版,引用数据, new Watcher() , Watcher 放假的 Dep.target 上
+    > 3. 因为数据被引用 getter 方法, 可以获取到 Watcher 实例, 添加到 dep 的数组上
+    > 4. 数据更新调用 setter 方法, 进而通知 watcher 形成关联关系
 
 
 2. 检测变化的注意事项:
   由于 js 的限制, Vue 不能检测数组和对象的变化,Vue 不能检测数组和对象的变化,尽管如何我们还是有一些办法来回避这些限制并保证它们的响应性
 
   * 对于对象
-  Vue 无法检测 property 的添加或移除. 由于 Vue 会在初始化实例时对 property 执行 getter/setter 转化, 所以 property 必须在 data 对象上存在才能让 Vue 将它转化为响应式. 例如
+    Vue 无法检测 property 的添加或移除. 由于 Vue 会在初始化实例时对 property 执行 getter/setter 转化, 所以 property 必须在 data 对象上存在才能让 Vue 将它转化为响应式. 例如
+      ```js
+      var vm = new Vue({
+        data:{
+          a:1
+        }
+      })
+      // `vm.a` 是响应式的
+      vm.b = 2
+      // `vm.b` 是非响应式的
+      ```
+    对于已经创建的实例, Vue 不允许动态添加根级别的响应式 property. 但是,可以使用 Vue.set(vm.someObject,propertyName,value) 方法向嵌套对象添加响应式 property. 例如, 对于
     ```js
-
-    var vm = new Vue({
-      data:{
-        a:1
-      }
-    })
-
-    // `vm.a` 是响应式的
-
-    vm.b = 2
-    // `vm.b` 是非响应式的
+      Vue.set(vm.someObject, 'b', 2)
     ```
-  对于已经创建的实例, Vue 不允许动态添加根级别的响应式 property. 但是,可以使用 Vue.set(vm.someObject,propertyName,value) 方法向嵌套对象添加响应式 property. 例如, 对于
-
-  ```js
-   Vue.set(vm.someObject, 'b', 2)
-  ```
-  有时你可能需要为已有对象赋值多个新 property. 比如使用 Object.assign()或 _extend(). 但是, 这样添加到对象上的新 property 不会触发更新. 在这种情况下, 你应该用原对象与要混合进去的对象的 property 一起创建一个新的对象
-
-```js
-// 代替 `Object.assign(this.someObject, { a: 1, b: 2 })`
-this.someObject = Object.assign({}, this.someObject, { a: 1, b: 2 })
-
-```
-
+    有时你可能需要为已有对象赋值多个新 property. 比如使用 Object.assign()或 _extend(). 但是, 这样添加到对象上的新 property 不会触发更新. 在这种情况下, 你应该用原对象与要混合进去的对象的 property 一起创建一个新的对象
+    ```js
+    // 代替 `Object.assign(this.someObject, { a: 1, b: 2 })`
+    this.someObject = Object.assign({}, this.someObject, { a: 1, b: 2 })
+    ```
 * 对于数组
-   Vue 不能检测以下数组的变动:
+  Vue 不能检测以下数组的变动:
    1. 当你利用索引直接设置一个数组项时, 例如: vm.items[indexOfItem] = vlaue
    2. 当你修改数组的长度时. 例如: vm.items.length = newLength
   举个例子
+  ```js
+  var vm = new Vue({
+    data: {
+      items: ['a', 'b', 'c']
+    }
+    })
+    vm.items[1] = 'x' // 不是响应性的
+    vm.items.length = 2 // 不是响应性的
+  ```
+  为了解决第一类问题,以下两种方式都可以实现和 vm.items[indexOfItem] = newValue 相公的效果, 同时也将在响应系统内触发状态更新
+  ```js
+  // Vue.set
+  Vue.set(vm.items, indexOfItem, newValue)
+  ```
+  ```js
+  //Array.prototype.splice
+  vm.items.splice(indexOfItem,1,newValue)
+  ```
+  你也可以使用 vm.$set 实例方法,该方法是全局方法 Vue.set 的一个别名:
 
+  ```
+  vm.$set(vm.items,indexOfItem,newValue)
+  ```
+**声明响应式 property**
+由于 Vue 不允许动态添加根级响应式 property, 所以你必须在初始化实例前声明所有根级响应式 property,哪怕只是一个空值:
+```js
+var vm = new Vue({
+  data: {
+    // 声明 message 为一个空值字符串
+    message: ''
+  },
+  template: '<div>{{ message }}</div>'
+})
+// 之后设置 `message`
+vm.message = 'Hello!'
+```
+如果你未在 data 选项中声明 message, Vue将警告你渲染函数正在试图访问不存在的 property
+
+这样的限制在背后是有其技术原因的. 它消除了在依赖项跟踪系统中的一类边界情况, 也使 Vue 实例能更好地配合类型检查系统工作. 但与此同时在代码可维护性方面也有一点重要的考虑: data 对象就像组件状态的结构. 提前声明所有的响应式 property, 可以让组件代码在未来修改或给其他开发人员阅读时更易于理解
 
 **异步更新队列**
 Vue 在更新 DOM 时是异步执行的. 只要侦听到数据变化, Vue 将开启一个队列, 并缓存在同一事件循环中发生的所有数据变更. 如果同一个 watcher 被多次触发, 只会被推入到队列中移除, 这种在缓冲时去除重复数据对于避免不必要的技术和 DOM 操作是非常重要的. 然后, 在下一个的事件循环"tick"中,Vue 刷新队列并执行实际(已去重的)工作. vue 在内部对异步队列尝试使用原来的 Promise.then, MutationObserver 和 setIMmediate, 如果执行环境不支持,则会采用 setTimeout(fn,0)代替.
@@ -2169,20 +2412,6 @@ methods: {
 
 ```
 
-**检测变化的注意事项**
-
-由于 js 的限制, Vue 不能检查数组和对象的变化,
-
-
-
-**异步更新队列**
-
-
-
-
-
-
-
 
 # api
 
@@ -2198,45 +2427,6 @@ methods: {
 
 
 
-**什么是生命周期**
-
-每个 Vue 实例在被创建时都要经过一系列的初始化过程--例如,需要设置数据监听,编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等, 同时在这个过程中也会运行一些叫做神功周期钩子的函数, 这给了用户在不同阶段添加自己的代码的机会.
-
-Vue中生命周期, 一共分为四大类, 分别是实例期,挂载期, 更新期, 销毁期, 每个周期飞卫当前周期前后. 其实简单点来说生命周期跟我们人的一生也挺相似的. 
-
-我们人一生分为出生前(实例期)，青年期(挂载期),中老年期(更新期)，死亡(销毁期)，下面见生命周期图解
-
-**生命周期图解**
-1. 实例期
- 实例创建前(beforeCreate)
-   * 组件实例刚刚被创建, 组件属性还未创建
-   * 在实例初始化之后, 数据观测(data observe) 和 event/ watcher 事件配置之前调用
- 实例创建后(Created)
-   组件实例创建完成, 属性已经绑定, 但是挂载阶段还没开始,  DOM 还未生成, $el 属性目前不可见
-
-2. 挂载期:
-  挂载前(beforeMount):
-  * 在挂载开始之前被调用, 相关的 render 函数首次被调用, 该钩子在服务端渲染期间不被调用
-  * 挂载后(mounted)
-    + el 被创建的 vm.$el 替换, 并挂载到到实例上去之后调用该钩子
-    + 如果root实例挂在了一个文档内元素,当mounted被调用时,vm.$el也在文档内
-    + 该钩子在服务器端渲染期间不被调用
-3. 更新期:
-  更新前(beforeUpdate):
-     * 数据更新时调用,发生在虚拟 DOM 打补丁之前. 这里适合在更新之前访问现有的 DOM, 比如手动移除已添加的事件监听器
-     * 数据更新时调用,发生在虚拟 DOM 重选渲染和打补丁之前
-     * 可以在这个钩子中进一步的更改状态,这不会触发附加的重新渲染过程.
-  更新后(updated)
-    * 由于数据更改导致的虚拟 DOM 重新渲染和打补丁,在这之后会调用该钩子
-    * 当这个钩子被调用时, 组件 DOM 已经更新,所以你现在可以执行依赖于 DOM 的操作
-    * 该钩子在服务器端渲染期间不被调用
-4. 销毁期
-   销毁期(beforeDestory)
-    * 实例销毁之前调用,在这一步, 实例仍然完全可用
-    * 该钩子在服务器渲染期间不被调用
-  销毁后(Destory)
-    * Vue 实例销毁后调用,调用后, Vue 实例指定的所有东西都会解除绑定, 所有的事件监听器都会被移除, 所有的子实例也会被销毁
-    * 该钩子在服务端渲染期间不会被调用
 
 
 
