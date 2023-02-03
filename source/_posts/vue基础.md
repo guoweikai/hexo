@@ -6,8 +6,10 @@ tags:
 # 基础
 ## 介绍
    **Vue.js 是什么?**
+
     Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
-   **声明式渲染
+   **声明式渲染**
+   
 ## Vue 实例
 **创建一个实例**
   每一个 Vue 应用都是通过用 Vue 函数创建一个新的 Vue 实例开始的:
@@ -2073,7 +2075,7 @@ RefInFor:true
 **约束**
 
 
-## 内在
+## 内在  考点之一:
 
 **深入响应式原理**
 
@@ -2096,7 +2098,42 @@ Vue 最独特的特性之一, 是其非侵入性的响应式系统,数据模型�
 > 4. 数据更新调用 setter 方法, 进而通知 watcher 形成关联关系
 
 
-其实在 Vue 中 初始化渲染
+2. 检测变化的注意事项:
+  由于 js 的限制, Vue 不能检测数组和对象的变化,Vue 不能检测数组和对象的变化,尽管如何我们还是有一些办法来回避这些限制并保证它们的响应性
+
+  * 对于对象
+  Vue 无法检测 property 的添加或移除. 由于 Vue 会在初始化实例时对 property 执行 getter/setter 转化, 所以 property 必须在 data 对象上存在才能让 Vue 将它转化为响应式. 例如
+    ```js
+
+    var vm = new Vue({
+      data:{
+        a:1
+      }
+    })
+
+    // `vm.a` 是响应式的
+
+    vm.b = 2
+    // `vm.b` 是非响应式的
+    ```
+  对于已经创建的实例, Vue 不允许动态添加根级别的响应式 property. 但是,可以使用 Vue.set(vm.someObject,propertyName,value) 方法向嵌套对象添加响应式 property. 例如, 对于
+
+  ```js
+   Vue.set(vm.someObject, 'b', 2)
+  ```
+  有时你可能需要为已有对象赋值多个新 property. 比如使用 Object.assign()或 _extend(). 但是, 这样添加到对象上的新 property 不会触发更新. 在这种情况下, 你应该用原对象与要混合进去的对象的 property 一起创建一个新的对象
+
+```js
+// 代替 `Object.assign(this.someObject, { a: 1, b: 2 })`
+this.someObject = Object.assign({}, this.someObject, { a: 1, b: 2 })
+
+```
+
+* 对于数组
+   Vue 不能检测以下数组的变动:
+   1. 当你利用索引直接设置一个数组项时, 例如: vm.items[indexOfItem] = vlaue
+   2. 当你修改数组的长度时. 例如: vm.items.length = newLength
+  举个例子
 
 
 **异步更新队列**
