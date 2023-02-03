@@ -17,11 +17,11 @@ Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不
 
   每一个 Vue 应用都是通过用 Vue 函数创建一个新的 Vue 实例开始的:
 
-    ```js
+  ```js
     var vm = new Vue({
-          // 选项
+    // 选项
     })
-    ```
+  ```
 
 **数据与方法**
 
@@ -159,25 +159,16 @@ HTML 将被渲染为:
     ```js
     <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
     ```
-
-
     ```js
     data: {
     activeColor: 'red',
     fontSize: 30
     }
     ```
-
     直接绑定到一个样式对象通常更好, 这会让模版更清晰
-
     ```js
-
     <div v-bind:style="styleObject"></div>
-
     ```
-
-
-
     ```js
     data: {
     styleObject: {
@@ -185,11 +176,8 @@ HTML 将被渲染为:
       fontSize: '13px'
     }
     }
-
     ```
-
     同样的, 对象语法常常结合返回对象的计算属性使用
-
 
 2. 数组语法
 
@@ -231,8 +219,8 @@ HTML 将被渲染为:
 
 
 2. 在 template 元素上使用 v-if 条件渲染分组
+   
     因为  v-if 是一个指令, 所以必须将它添加到一个元素上. 但是如果想切换多个元素呢? 此时可以把一个 template 元素当做不可见的包裹元素, 并在上面使用 v-if. 最终的渲染结果将不包含 template 元素
-
 
     ```js
     <template v-if="ok">
