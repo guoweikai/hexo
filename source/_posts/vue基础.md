@@ -5,33 +5,37 @@ tags:
 ---
 # 基础
 ## 介绍
-   **Vue.js 是什么?**
+**Vue.js 是什么?**
 
-    Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
-   **声明式渲染**
-   
+Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
+
+**声明式渲染**
+
 ## Vue 实例
+
 **创建一个实例**
+
   每一个 Vue 应用都是通过用 Vue 函数创建一个新的 Vue 实例开始的:
-  ```js
+
+    ```js
     var vm = new Vue({
-        // 选项
+          // 选项
     })
-  ```
+    ```
 
 **数据与方法**
 
-当一个 Vue 实例被创建时, 它将 data 对象中的所有 property 加入到 Vue 的响应式系统中. 当这些 property 的值发生改变时, 视图将会发生响应, 即匹配更新为新的值
+  当一个 Vue 实例被创建时, 它将 data 对象中的所有 property 加入到 Vue 的响应式系统中. 当这些 property 的值发生改变时, 视图将会发生响应, 即匹配更新为新的值
 
 **实例生命周期钩子**
 
-每个 Vue 实例在被创建时都要经过一系列的初始化过程--- 例如, 需要设置数据监听, 编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等. 同时在这个过程中也会运行一些叫做生命周期钩子的函数, 这给了用户在不同阶段添加自己代码的机会
+  每个 Vue 实例在被创建时都要经过一系列的初始化过程--- 例如, 需要设置数据监听, 编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等. 同时在这个过程中也会运行一些叫做生命周期钩子的函数, 这给了用户在不同阶段添加自己代码的机会
 
 ## 模版语法
 
- Vue.js 使用了基于 html 的模版语法, 允许开发者声明式地将 DOM 绑定至底层 Vue 实例的数据. 所有 Vue.js 的模版都是合法的 HTML, 所以能被遵循规范的浏览器和 HTML 解析器解析
+  Vue.js 使用了基于 html 的模版语法, 允许开发者声明式地将 DOM 绑定至底层 Vue 实例的数据. 所有 Vue.js 的模版都是合法的 HTML, 所以能被遵循规范的浏览器和 HTML 解析器解析
 
- 在底层的实现上, Vue 将模版编译成虚拟 DOM 渲染函数. 结合响应系统, Vue 能够智能地计算出最少需要重新渲染多少组件, 并把 DOM 操作次数减到最少.
+  在底层的实现上, Vue 将模版编译成虚拟 DOM 渲染函数. 结合响应系统, Vue 能够智能地计算出最少需要重新渲染多少组件, 并把 DOM 操作次数减到最少.
 
 **插值**
 1. 文本 使用双大括号
@@ -41,9 +45,9 @@ tags:
 4. 使用 javaScript 表达式
 
 
-注意:
->模版表达式都被放在沙盒中, 只能访问全局变量的一个白名单, 如 Math 和 Date, 你不应该在模版表达式中视图访问用户定义的全局变量
+  注意:
 
+  >模版表达式都被放在沙盒中, 只能访问全局变量的一个白名单, 如 Math 和 Date, 你不应该在模版表达式中视图访问用户定义的全局变量
 
 **指令**
 
@@ -51,23 +55,24 @@ tags:
 
 1. 参数
 
-一些指令能够接收一个参数,在指令名称之后以冒号表示. 例如, v-bind 指令可以用于响应式更新 HTML attribute
+    一些指令能够接收一个参数,在指令名称之后以冒号表示. 例如, v-bind 指令可以用于响应式更新 HTML attribute
 
-```js
-  <a v-bind:href="url">...</a>
-```
-在这里 href 是参数, 告知 v-bind 指令将该元素的 href attribute 与表达式 URL 的值绑定. 
+    ```js
+    <a v-bind:href="url">...</a>
+    ```
+    在这里 href 是参数, 告知 v-bind 指令将该元素的 href attribute 与表达式 URL 的值绑定. 
 
-另一个例子是 v-on 指令, 它用于监听 DOM 事件
+    另一个例子是 v-on 指令, 它用于监听 DOM 事件
 
-```js
+    ```js
     <a v-on:click="doSomething">...</a>
-```
+    ```
 2. 动态参数
 
 3. 修饰符
    
 **缩写**
+
  它们看起来可能与普通的 html 略有不同, 但 : 与 @ 对于 attribute 名来说都是合法字符, 在所有支持 Vue 的浏览器都能被正确地解析. 而且,它们不会出现在最终渲染的标记中
 
 
@@ -149,64 +154,63 @@ HTML 将被渲染为:
 
 1. 对象语法
 
-v-bind:style 的对象语法十分直观-- 看着非常像 css , 但其实是一个 JavaScript 对象, css property 名可以用 驼峰式或短横线分隔来命名
+    v-bind:style 的对象语法十分直观-- 看着非常像 css , 但其实是一个 JavaScript 对象, css property 名可以用 驼峰式或短横线分隔来命名
 
-```js
- <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
-```
-
-
-```js
-data: {
-  activeColor: 'red',
-  fontSize: 30
-}
-```
-
-直接绑定到一个样式对象通常更好, 这会让模版更清晰
-
-```js
-
-<div v-bind:style="styleObject"></div>
-
-```
+    ```js
+    <div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }"></div>
+    ```
 
 
+    ```js
+    data: {
+    activeColor: 'red',
+    fontSize: 30
+    }
+    ```
 
-```js
-data: {
-  styleObject: {
-    color: 'red',
-    fontSize: '13px'
-  }
-}
+    直接绑定到一个样式对象通常更好, 这会让模版更清晰
 
-```
+    ```js
 
-同样的, 对象语法常常结合返回对象的计算属性使用
+    <div v-bind:style="styleObject"></div>
+
+    ```
+
+
+
+    ```js
+    data: {
+    styleObject: {
+      color: 'red',
+      fontSize: '13px'
+    }
+    }
+
+    ```
+
+    同样的, 对象语法常常结合返回对象的计算属性使用
 
 
 2. 数组语法
 
-v-bind:style 的数组语法可以将多个样式对象应用到同一个元素上:
+    v-bind:style 的数组语法可以将多个样式对象应用到同一个元素上:
 
-```js
-
-<div v-bind:style="[baseStyles, overridingStyles]"></div>
-```
+    ```js
+    <div v-bind:style="[baseStyles, overridingStyles]"></div>
+    ```
 
 3. 自动添加前缀
 
 
 4. 多重值
 
-从 2.3.0 起你可以为 style 绑定中的 property 提供一个包含多个值的数组, 常用于提供多个带前缀的值, 例如:
+    从 2.3.0 起你可以为 style 绑定中的 property 提供一个包含多个值的数组, 常用于提供多个带前缀的值, 例如:
 
-```js
-<div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"></div>
+    ```js
+    <div :style="{ display: ['-webkit-box', '-ms-flexbox', 'flex'] }"></div>
 
-```
-这样写只会渲染数组中最后一个被浏览器支持的值, 在本例中, 如果浏览器支持不带浏览器前缀的 flexbox, 那么就只会渲染 display:flex
+    ```
+    这样写只会渲染数组中最后一个被浏览器支持的值, 在本例中, 如果浏览器支持不带浏览器前缀的 flexbox, 那么就只会渲染 display:flex
 
 
 
@@ -215,102 +219,94 @@ v-bind:style 的数组语法可以将多个样式对象应用到同一个元素�
 **v-if**
 1. v-if 指令用于条件性地渲染一块内容. 这块内容只会在指令的表达式返回 truthy 值的时候会被渲染
 
-```js
-   <h1 v-if="awesome">Vue is awesome !</h1>
-```
-也可以用 v-else 添加一个 else 块:
+    ```js
+    <h1 v-if="awesome">Vue is awesome !</h1>
+    ```
+    也可以用 v-else 添加一个 else 块:
 
-```js
-<h1 v-if="awesome">Vue is awesome!</h1>
-<h1 v-else>Oh no 😢</h1>
-
-```
+    ```js
+    <h1 v-if="awesome">Vue is awesome!</h1>
+    <h1 v-else>Oh no 😢</h1>
+    ```
 
 
 2. 在 template 元素上使用 v-if 条件渲染分组
-因为  v-if 是一个指令, 所以必须将它添加到一个元素上. 但是如果想切换多个元素呢? 此时可以把一个 template 元素当做不可见的包裹元素, 并在上面使用 v-if. 最终的渲染结果将不包含 template 元素
+    因为  v-if 是一个指令, 所以必须将它添加到一个元素上. 但是如果想切换多个元素呢? 此时可以把一个 template 元素当做不可见的包裹元素, 并在上面使用 v-if. 最终的渲染结果将不包含 template 元素
 
 
-```js
-<template v-if="ok">
-  <h1>Title</h1>
-  <p>Paragraph 1</p>
-  <p>Paragraph 2</p>
-</template>
-```
+    ```js
+    <template v-if="ok">
+    <h1>Title</h1>
+    <p>Paragraph 1</p>
+    <p>Paragraph 2</p>
+    </template>
+    ```
 
 3. v-else
 
-你可以使用 v-else 指令来表示 v-if 的 'else 块'
+    你可以使用 v-else 指令来表示 v-if 的 'else 块'
 
-```js
-<div v-if="Math.random() > 0.5">
-  Now you see me
-</div>
-<div v-else>
-  Now you don't
-</div>
+    ```js
+    <div v-if="Math.random() > 0.5">
+      Now you see me
+    </div>
+    <div v-else>
+      Now you don't
+    </div>
+    ```
 
-```
-
-v-else 元素必须紧跟在带 v-if 或者 v-else-if 的元素的后面, 否则它将不会被识别
+    v-else 元素必须紧跟在带 v-if 或者 v-else-if 的元素的后面, 否则它将不会被识别
 
 
 4. v-else-if
 
-  2.1.0 新增
-  v-else-if 顾名思义, 充当 v-if 的 'else-if 块', 可以连续使用:
+    2.1.0 新增
+    v-else-if 顾名思义, 充当 v-if 的 'else-if 块', 可以连续使用:
 
 5. 用 key 管理可复用的元素
 
-Vue 会尽可能高效地渲染元素,通常会复用已有元素而不是从头开始渲染.这么做除了使 Vue 变得非常快之外, 还有其它一些好处. 例如, 如果你允许用户在不同的登录方式之间切换:
+    Vue 会尽可能高效地渲染元素,通常会复用已有元素而不是从头开始渲染.这么做除了使 Vue 变得非常快之外, 还有其它一些好处. 例如, 如果你允许用户在不同的登录方式之间切换:
 
+    ```js
+    <template v-if="loginType === 'username'">
+      <label>Username</label>
+      <input placeholder="Enter your username">
+    </template>
+    <template v-else>
+      <label>Email</label>
+      <input placeholder="Enter your email address">
+    </template>
 
-```js
-<template v-if="loginType === 'username'">
-  <label>Username</label>
-  <input placeholder="Enter your username">
-</template>
-<template v-else>
-  <label>Email</label>
-  <input placeholder="Enter your email address">
-</template>
+    ```
+    那么在上面的代码中切换 loginType 将不会清除用户已经输入的内容。因为两个模板使用了相同的元素，input 不会被替换掉——仅仅是替换了它的 placeholder。
 
-```
+    自己动手试一试，在输入框中输入一些文本，然后按下切换按钮：
 
-那么在上面的代码中切换 loginType 将不会清除用户已经输入的内容。因为两个模板使用了相同的元素，input 不会被替换掉——仅仅是替换了它的 placeholder。
+    这样也不总是符合实际需求，所以 Vue 为你提供了一种方式来表达“这两个元素是完全独立的，不要复用它们”。只需添加一个具有唯一值的 key attribute 即可：
 
-自己动手试一试，在输入框中输入一些文本，然后按下切换按钮：
-
-这样也不总是符合实际需求，所以 Vue 为你提供了一种方式来表达“这两个元素是完全独立的，不要复用它们”。只需添加一个具有唯一值的 key attribute 即可：
-
-```js
-<template v-if="loginType === 'username'">
-  <label>Username</label>
-  <input placeholder="Enter your username" key="username-input">
-</template>
-<template v-else>
-  <label>Email</label>
-  <input placeholder="Enter your email address" key="email-input">
-</template>
-
-```
-
+    ```js
+    <template v-if="loginType === 'username'">
+      <label>Username</label>
+      <input placeholder="Enter your username" key="username-input">
+    </template>
+    <template v-else>
+      <label>Email</label>
+      <input placeholder="Enter your email address" key="email-input">
+    </template>
+    ```
 **v-show**
 
 另一个用于根据条件展示元素的选项是 v-show 指令, 用法大致一样
 
 ```js
-    <h1 v-show="ok">hello</h1>
-
+<h1 v-show="ok">hello</h1>
 ```
 
 不同的是 带有 v-show 的元素始终会被渲染并保留在 DOM 中. v-show 只是简单地切换元素的 css property display
 
 
 ```js
- 注意, v-show 不支持 <template> 元素, 也不支持 v-else
-
+注意, v-show 不支持 <template> 元素, 也不支持 v-else
 ```
 **v-if vs v-show**
 
@@ -404,53 +400,53 @@ example1.items = example1.items.filter(function (item) {
 
 * 注意事项
 
-显示过滤/排序后的结果
+    显示过滤/排序后的结果
 
-有时, 我们想要显示一个数组经过过滤或排序后的版本, 而不实际变更或重置原始数据. 在这种情况下, 可以创建一个计算属性, 来返回过滤或排序后的数组
+    有时, 我们想要显示一个数组经过过滤或排序后的版本, 而不实际变更或重置原始数据. 在这种情况下, 可以创建一个计算属性, 来返回过滤或排序后的数组
 
-例如:
+    例如:
 
-```js
-<li v-for="n in evenNumbers">{{ n }}</li>
+    ```js
+    <li v-for="n in evenNumbers">{{ n }}</li>
 
-```
+    ```
 
-```js
-data: {
-  numbers: [ 1, 2, 3, 4, 5 ]
-},
-computed: {
-  evenNumbers: function () {
+    ```js
+    data: {
+    numbers: [ 1, 2, 3, 4, 5 ]
+    },
+    computed: {
+    evenNumbers: function () {
     return this.numbers.filter(function (number) {
-      return number % 2 === 0
+    return number % 2 === 0
     })
-  }
-}
+    }
+    }
 
-```
+    ```
 
-在计算属性不适用的情况下(例如, 在嵌套 v-for 循环中) 你可以使用一个方法:
+    在计算属性不适用的情况下(例如, 在嵌套 v-for 循环中) 你可以使用一个方法:
 
-```js
-<ul v-for="set in sets">
-  <li v-for="n in even(set)">{{ n }}</li>
-</ul>
-```
+    ```js
+    <ul v-for="set in sets">
+    <li v-for="n in even(set)">{{ n }}</li>
+    </ul>
+    ```
 
 
-```js
-data: {
-  sets: [[ 1, 2, 3, 4, 5 ], [6, 7, 8, 9, 10]]
-},
-methods: {
-  even: function (numbers) {
+    ```js
+    data: {
+    sets: [[ 1, 2, 3, 4, 5 ], [6, 7, 8, 9, 10]]
+    },
+    methods: {
+    even: function (numbers) {
     return numbers.filter(function (number) {
-      return number % 2 === 0
+    return number % 2 === 0
     })
-  }
-}
+    }
+    }
 
-```
+    ```
 
 **在v-for里使用范围值**
 
@@ -458,10 +454,9 @@ methods: {
 v-for 也可以接受整数. 在这种情况下, 它会把模板重复对应次数
 
 ```js
-    <div>
+<div>
   <span v-for="n in 10">{{ n }} </span>
 </div>
-
 ```
 
 **在 template 上使用 v-for**
@@ -612,15 +607,15 @@ methods: {
     ```
   4. 单选按钮
   ```js
-    <div id="example-4">
-  <input type="radio" id="one" value="One" v-model="picked">
-  <label for="one">One</label>
-  <br>
-  <input type="radio" id="two" value="Two" v-model="picked">
-  <label for="two">Two</label>
-  <br>
-  <span>Picked: {{ picked }}</span>
-</div>
+  <div id="example-4">
+    <input type="radio" id="one" value="One" v-model="picked">
+    <label for="one">One</label>
+    <br>
+    <input type="radio" id="two" value="Two" v-model="picked">
+    <label for="two">Two</label>
+    <br>
+    <span>Picked: {{ picked }}</span>
+  </div>
   ```
 
 
@@ -725,12 +720,10 @@ new Vue({
 
    ```
 3. .trim
-
-  如果要自动过滤用户输入的首尾空白字符, 可以给 v-model 添加trim 修饰符
+   如果要自动过滤用户输入的首尾空白字符, 可以给 v-model 添加trim 修饰符
 
 ```js
 <input v-model.trim="msg">
-
 ```
 
 **在组件上使用 v-model**
@@ -807,6 +800,7 @@ prop 是你可以在组件上注册的一些自定义 attribute, 当一个值传
 **单个根元素**
 
 **监听子元素事件**
+
   使用事件抛出一个值
   在组件上使用 v-model
 
@@ -823,6 +817,7 @@ prop 是你可以在组件上注册的一些自定义 attribute, 当一个值传
 
 
 **解析 DOM 模板时的注意事项**
+
 有些 HTML 元素, 诸如 ul ,ol, table , select , 对于哪些元素可以出现在其内部是有严格限制的. 而有些元素, 诸如li tr option 只能出现在其它某些特定的元素内部
 
 这会导致我们使用这些有约束条件的元素时遇到一些问题. 例如:
@@ -854,6 +849,7 @@ prop 是你可以在组件上注册的一些自定义 attribute, 当一个值传
 ## 组件注册
 
 **组件名**
+
 在注册一个组件的时候,我们始终需要给它一个名字,不如在全局注册的时候我们已经看到了:
 
 ```js
@@ -891,6 +887,7 @@ Vue.component('my-component-name', { /* ... */ })
 在所有子组件中也是如此，也就是说这三个组件在各自内部也都可以相互使用。
 
 **局部注册**
+
 全局注册往往是不够理想的. 比如, 如果你使用一个想 webpack 这样的构建系统, 全局注册所有的组件意味着即便你已经不再使用一个组件了,它仍然会被包含在你最终的构建结果中. 这造成了用户下载的 js 的无畏的增加
 
 在这些情况下, 你可以通过一个普通的 js对象来定义组件
@@ -997,9 +994,9 @@ Vue.component('blog-post', {
 
 **Prop 类型**
 
-传递静态或动态 Prop
-    传入一个数字
-    传入一个布尔值
+* 传递静态或动态 Prop
+    + 传入一个数字
+    + 传入一个布尔值
 
 
 **单向数据流**
@@ -1011,7 +1008,7 @@ Vue.component('blog-post', {
 1. 这个 prop 用来传递一个初始值；这个子组件接下来希望将其作为一个本地的 prop 数据来使用。在这种情况下，最好定义一个本地的 data property 并将这个 prop 用作其初始值
 
 ```js
-  props: ['initialCounter'],
+props: ['initialCounter'],
 data: function () {
   return {
     counter: this.initialCounter
@@ -1024,7 +1021,7 @@ data: function () {
 
 
 ```js
-  props: ['size'],
+props: ['size'],
 computed: {
   normalizedSize: function () {
     return this.size.trim().toLowerCase()
@@ -1070,21 +1067,21 @@ computed: {
 一个组件上的 v-model 默认会利用名为 value 的 prop 和名为 input 的事件，但是像单选框、复选框等类型的输入控件可能会将 value attribute 用于不同的目的。model 选项可以用来避免这样的冲突：
 
 ```js
-  Vue.component('base-checkbox', {
-  model: {
-    prop: 'checked',
-    event: 'change'
-  },
-  props: {
-    checked: Boolean
-  },
-  template: `
-    <input
-      type="checkbox"
-      v-bind:checked="checked"
-      v-on:change="$emit('change', $event.target.checked)"
-    >
-  `
+Vue.component('base-checkbox', {
+model: {
+  prop: 'checked',
+  event: 'change'
+},
+props: {
+  checked: Boolean
+},
+template: `
+  <input
+    type="checkbox"
+    v-bind:checked="checked"
+    v-on:change="$emit('change', $event.target.checked)"
+  >
+`
 })
 ```
 
@@ -1470,7 +1467,7 @@ const AsyncComponent = () => ({
 
 ## 处理边界情况
 
-访问元素 & 组件
+访问元素&组件
 
 在绝大多数情况下, 我们最好不要触达另一个组件实例内部或手动操作 DOM 元素, 不过也确实在一些情况下做这些事情是合适的
 
@@ -1513,19 +1510,17 @@ this.$root.baz()
 
 
 2. 访问父级组件实例
-和 $root 类似，$parent property 可以用来从一个子组件访问父组件的实例。它提供了一种机会，可以在后期随时触达父级组件，以替代将数据以 prop 的方式传入子组件的方式。
+    和 $root 类似，$parent property 可以用来从一个子组件访问父组件的实例。它提供了一种机会，可以在后期随时触达父级组件，以替代将数据以 prop 的方式传入子组件的方式。
 
->在绝大多数情况下，触达父级组件会使得你的应用更难调试和理解，尤其是当你变更了父级组件的数据的时候。当我们稍后回看那个组件的时候，很难找出那个变更是从哪里发起的。
+    >在绝大多数情况下，触达父级组件会使得你的应用更难调试和理解，尤其是当你变更了父级组件的数据的时候。当我们稍后回看那个组件的时候，很难找出那个变更是从哪里发起的。
 
-另外在一些可能适当的时候，你需要特别地共享一些组件库。举个例子，在和 JavaScript API 进行交互而不渲染 HTML 的抽象组件内，诸如这些假设性的 Google 地图组件一样：
+    另外在一些可能适当的时候，你需要特别地共享一些组件库。举个例子，在和 JavaScript API 进行交互而不渲染 HTML 的抽象组件内，诸如这些假设性的 Google 地图组件一样：
 
-```js
-
-<google-map>
-  <google-map-markers v-bind:places="iceCreamShops"></google-map-markers>
-</google-map>
-
-```
+    ```js
+    <google-map>
+      <google-map-markers v-bind:places="iceCreamShops"></google-map-markers>
+    </google-map>
+    ```
 
 
 3. 访问子组件实例或子元素
@@ -1533,48 +1528,43 @@ this.$root.baz()
 4. 依赖注入
 
 
-在此之前, 在我们描述访问父级组件实例的时候, 展示过一个类似这样的例子:
+    在此之前, 在我们描述访问父级组件实例的时候, 展示过一个类似这样的例子:
 
-```js
+    ```js
 
-<google-map>
-  <google-map-region v-bind:shape="cityBoundaries">
-    <google-map-markers v-bind:places="iceCreamShops"></google-map-markers>
-  </google-map-region>
-</google-map>
-```
+    <google-map>
+      <google-map-region v-bind:shape="cityBoundaries">
+        <google-map-markers v-bind:places="iceCreamShops"></google-map-markers>
+      </google-map-region>
+    </google-map>
+    ```
 
-在这个组件里，所有 google-map 的后代都需要访问一个 getMap 方法，以便知道要跟哪个地图进行交互。不幸的是，使用 $parent property 无法很好的扩展到更深层级的嵌套组件上。这也是依赖注入的用武之地，它用到了两个新的实例选项：provide 和 inject。
+    在这个组件里，所有 google-map 的后代都需要访问一个 getMap 方法，以便知道要跟哪个地图进行交互。不幸的是，使用 $parent property 无法很好的扩展到更深层级的嵌套组件上。这也是依赖注入的用武之地，它用到了两个新的实例选项：provide 和 inject。
 
-provide 选项允许我们指定我们想要提供给后代组件的数据/方法。在这个例子中，就是 google-map 内部的 getMap 方法：
+    provide 选项允许我们指定我们想要提供给后代组件的数据/方法。在这个例子中，就是 google-map 内部的 getMap 方法：
 
-```js
-provide: function () {
-  return {
-    getMap: this.getMap
-  }
-}
+    ```js
+    provide: function () {
+      return {
+        getMap: this.getMap
+      }
+    }
 
-```
-然后在任何后代组件里，我们都可以使用 inject 选项来接收指定的我们想要添加在这个实例上的 property：
+    ```
+    然后在任何后代组件里，我们都可以使用 inject 选项来接收指定的我们想要添加在这个实例上的 property：
 
-```js
-inject: ['getMap']
+    ```js
+    inject: ['getMap']
 
-```
+    ```
 
-你可以在这里看到完整的示例。相比 $parent 来说，这个用法可以让我们在任意后代组件中访问 getMap，而不需要暴露整个 google-map 实例。这允许我们更好的持续研发该组件，而不需要担心我们可能会改变/移除一些子组件依赖的东西。同时这些组件之间的接口是始终明确定义的，就和 props 一样。
+    你可以在这里看到完整的示例。相比 $parent 来说，这个用法可以让我们在任意后代组件中访问 getMap，而不需要暴露整个 google-map 实例。这允许我们更好的持续研发该组件，而不需要担心我们可能会改变/移除一些子组件依赖的东西。同时这些组件之间的接口是始终明确定义的，就和 props 一样。
 
-实际上，你可以把依赖注入看作一部分“大范围有效的 prop”，除了：
- * 祖先组件不需要知道哪些后代组件使用它提供的 property
- * 后代组件不需要知道被注入的 property 来自哪里
+    实际上，你可以把依赖注入看作一部分“大范围有效的 prop”，除了：
+    * 祖先组件不需要知道哪些后代组件使用它提供的 property
+    * 后代组件不需要知道被注入的 property 来自哪里
 
->然而，依赖注入还是有负面影响的。它将你应用程序中的组件与它们当前的组织方式耦合起来，使重构变得更加困难。同时所提供的 property 是非响应式的。这是出于设计的考虑，因为使用它们来创建一个中心化规模化的数据跟使用 $root做这件事都是不够好的。如果你想要共享的这个 property 是你的应用特有的，而不是通用化的，或者如果你想在祖先组件中更新所提供的数据，那么这意味着你可能需要换用一个像 Vuex 这样真正的状态管理方案了。
-
-
-** 
-
-
+    >然而，依赖注入还是有负面影响的。它将你应用程序中的组件与它们当前的组织方式耦合起来，使重构变得更加困难。同时所提供的 property 是非响应式的。这是出于设计的考虑，因为使用它们来创建一个中心化规模化的数据跟使用 $root做这件事都是不够好的。如果你想要共享的这个 property 是你的应用特有的，而不是通用化的，或者如果你想在祖先组件中更新所提供的数据，那么这意味着你可能需要换用一个像 Vuex 这样真正的状态管理方案了。
 
 
 ## 过渡 & 动画
