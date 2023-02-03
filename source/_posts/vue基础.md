@@ -16,11 +16,10 @@ Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不
 **创建一个实例**
 
   每一个 Vue 应用都是通过用 Vue 函数创建一个新的 Vue 实例开始的:
-
   ```js
-    var vm = new Vue({
-    // 选项
-    })
+  var vm = new Vue({
+  // 选项
+  })
   ```
 
 **数据与方法**
@@ -377,7 +376,6 @@ var example1 = new Vue({
 
 * 替换数组
   变更方法, 顾名思义, 会变更调用了这些方法的原始数组.相比之下, 也有非变更方法, 例如 filter() , concat() 和 slice(). 它们不会变更原始数组, 而总是返回一个新数组,当使用非变更方法时,可以用新数组替换旧数组:
-
   ```js
   example1.items = example1.items.filter(function (item) {
     return item.message.match(/Foo/)
