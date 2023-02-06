@@ -445,6 +445,24 @@ methods: {
   }
   ```
 
+  渲染为
+
+  ```js
+  <div class="active text-danger"></div>
+
+  ```
+
+  如果你也想根据条件切换列表中的 class，可以用三元表达式：
+  ```js
+  <div v-bind:class="[isActive ? activeClass : '', errorClass]"></div>
+
+  ```
+  这样写将始终添加 errorClass，但是只有在 isActive 是 truthy[1] 时才添加 activeClass。
+
+  不过，当有多个条件 class 时这样写有些繁琐。所以在数组语法中也可以使用对象语法：
+  ```js
+  <div v-bind:class="[{ active: isActive }, errorClass]"></div>
+  ```
 3. 用在组件上
 
  当在一个自定义组件上使用 class property时, 这些 class 将被添加到该组件的根元素上面. 这个元素上已经存在的 class 不会被覆盖
@@ -521,7 +539,7 @@ HTML 将被渲染为:
     ```
 
 3. 自动添加前缀
-
+    当 v-bind:style 使用需要添加浏览器引擎前缀的 CSS property 时，如 transform，Vue.js 会自动侦测并添加相应的前缀。
 
 4. 多重值
 
@@ -532,8 +550,6 @@ HTML 将被渲染为:
 
     ```
     这样写只会渲染数组中最后一个被浏览器支持的值, 在本例中, 如果浏览器支持不带浏览器前缀的 flexbox, 那么就只会渲染 display:flex
-
-
 
 ## 条件渲染
 
@@ -622,13 +638,9 @@ HTML 将被渲染为:
 ```js
 <h1 v-show="ok">hello</h1>
 ```
-
 不同的是 带有 v-show 的元素始终会被渲染并保留在 DOM 中. v-show 只是简单地切换元素的 css property display
+>注意, v-show 不支持 <template> 元素, 也不支持 v-else
 
-
-```js
-注意, v-show 不支持 <template> 元素, 也不支持 v-else
-```
 **v-if vs v-show**
 
 1. v-if 是"真正"的条件渲染,因为它会确保在切换过程中条件块内的事件监听器和子组件适当地被销毁和重建
@@ -645,7 +657,7 @@ HTML 将被渲染为:
 
 ## 列表渲染
 
-**数组**
+**用 v-for 把一个数组对应为一组元素**
 
 我们可以使用 v-for 指令基于一个数组来渲染一个列表, v-for 指令需要使用 item in items 形式的特殊语法, 其中 items 是源数据对象, 而 items 则是被迭代的数组元素的别名
 
@@ -669,7 +681,71 @@ var example1 = new Vue({
 })
 
 ```
-**对象**
+
+在 v-for 块中, 我们可以访问所有父作用域的 property, v-for 还支持一个可选的第二参数, 即当前想的索引.
+```js
+<ul id="example-2">
+  <li v-for="(item, index) in items">
+    {{ parentMessage }} - {{ index }} - {{ item.message }}
+  </li>
+</ul>
+```
+```js
+var example2 = new Vue({
+  el: '#example-2',
+  data: {
+    parentMessage: 'Parent',
+    items: [
+      { message: 'Foo' },
+      { message: 'Bar' }
+    ]
+  }
+})
+```
+
+你也可以用 of 替代 in 作为分隔符，因为它更接近 JavaScript 迭代器的语法：
+
+```js
+<div v-for="item of items"></div>
+```
+**在 v-for 里使用对象**
+你也可以用 v-for 来遍历一个对象的 property。
+```js
+<ul id="v-for-object" class="demo">
+  <li v-for="value in object">
+    {{ value }}
+  </li>
+</ul>
+```
+
+```js
+new Vue({
+  el: '#v-for-object',
+  data: {
+    object: {
+      title: 'How to do lists in Vue',
+      author: 'Jane Doe',
+      publishedAt: '2016-04-10'
+    }
+  }
+})
+```
+你也可以提供第二个的参数为 property 名称 (也就是键名)：
+```js
+<div v-for="(value, name) in object">
+  {{ name }}: {{ value }}
+</div>
+```
+
+还可以用第三个参数作为索引：
+
+```js
+<div v-for="(value, name, index) in object">
+  {{ index }}. {{ name }}: {{ value }}
+</div>
+```
+
+>在遍历对象时，会按 Object.keys() 的结果遍历，但是不能保证它的结果在不同的 JavaScript 引擎下都一致
 
 
 **维护状态**
@@ -718,8 +794,11 @@ var example1 = new Vue({
   你可能认为这将导致 Vue 丢弃现有 DOM 并重新渲染整个列表,幸运的是, 事实并非如此, Vue 为了使得 DOM 元素得到更大范围的重用而实现了一些智能的启发式方法,所以用一个含有相同元素的数组去替换原来的数组是非常高效地操作
 
 * 注意事项
+  由于 JavaScript 的限制，Vue 不能检测数组和对象的变化。深入响应式原理中有相关的讨论。
 
-    显示过滤/排序后的结果
+
+
+**显示过滤/排序后的结果**
 
     有时, 我们想要显示一个数组经过过滤或排序后的版本, 而不实际变更或重置原始数据. 在这种情况下, 可以创建一个计算属性, 来返回过滤或排序后的数组
 
@@ -768,8 +847,6 @@ var example1 = new Vue({
     ```
 
 **在v-for里使用范围值**
-
-
 v-for 也可以接受整数. 在这种情况下, 它会把模板重复对应次数
 
 ```js
@@ -811,13 +888,56 @@ v-for 也可以接受整数. 在这种情况下, 它会把模板重复对应次�
 
 然而, 任何数据都不会背自动传递到组件里, 因为组件有自己独立的作用域, 为了把迭代数据传递到组件里,我们要使用 prop
 
-
 ## 事件处理
 **监听事件**
 可以用 v-on 指令监听 DOM 事件, 并在触发时运行一些 js 代码
+示例:
+```js
+<div id="example-1">
+  <button v-on:click="counter += 1">Add 1</button>
+  <p>The button above has been clicked {{ counter }} times.</p>
+</div>
+```
+```js
+var example1 = new Vue({
+  el: '#example-1',
+  data: {
+    counter: 0
+  }
+})
+```
 
 **事件处理方法**
 然而许多事件处理逻辑会更为复杂，所以直接把 JavaScript 代码写在 v-on 指令中是不可行的。因此 v-on 还可以接收一个需要调用的方法名称。
+示例:
+```js
+<div id="example-2">
+  <!-- `greet` 是在下面定义的方法名 -->
+  <button v-on:click="greet">Greet</button>
+</div>
+```
+```js
+var example2 = new Vue({
+  el: '#example-2',
+  data: {
+    name: 'Vue.js'
+  },
+  // 在 `methods` 对象中定义方法
+  methods: {
+    greet: function (event) {
+      // `this` 在方法里指向当前 Vue 实例
+      alert('Hello ' + this.name + '!')
+      // `event` 是原生 DOM 事件
+      if (event) {
+        alert(event.target.tagName)
+      }
+    }
+  }
+})
+// 也可以用 JavaScript 直接调用方法
+example2.greet() // => 'Hello Vue.js!'
+```
+
 **内联处理器中的方法**
 除了直接绑定到一个方法，也可以在内联 JavaScript 语句中调用方法：
 
@@ -859,12 +979,61 @@ methods: {
 }
 ```
 
-
 **事件修饰符**
 
 在事件处理程序中调用 event.preventDefault() 事件默认行为 或 event.stopPropagation() 是非常常见的需求. 尽管我们可以在方法中轻松实现这点, 但更好的方式是:方法只有纯粹的数据逻辑, 而不是去处理 DOM 事件细节
 
+为了解决这个问题, Vue.js 为 v-on 提供了事件修饰符. 之前提供, 修饰符是由点开头的指令后缀来表示的
+
+* .stop
+* .prevent
+* .capture
+* .self
+* .once
+* .passive
+
 **按键修饰符**
+
+在监听键盘事件时，我们经常需要检查详细的按键。Vue 允许为 v-on 在监听键盘事件时添加按键修饰符：
+
+```js
+  <!-- 只有在 `key` 是 `Enter` 时调用 `vm.submit()` -->
+  <input v-on:keyup.enter="submit">
+```
+你可以直接将 KeyboardEvent.key 暴露的任意有效按键名转换为 kebab-case 来作为修饰符。
+```js
+<input v-on:keyup.page-down="onPageDown">
+```
+在上述示例中,处理函数只会在 $event.key 等于 PageDown 时被调用
+按键码
+> keyCode 的事件用法已经被废弃了并可能不会被最新的浏览器支持。
+使用 keyCode attribute 也是允许的：
+
+```js
+<input v-on:keyup.13="submit">
+```
+为了在必要的情况下支持旧浏览器你, Vue 提供了绝大多数常用的按键码的别名:
+* .enter
+* .tab
+* .delete
+* .esc
+* space
+* .up
+* .down
+* .left
+* .right
+> 有一些按键 (.esc 以及所有的方向键) 在 IE9 中有不同的 key 值, 如果你想支持 IE9，这些内置的别名应该是首选。
+
+你还可以通过全局 config.keyCodes 对象自定义按键修饰符别名:
+
+```js
+ // 可以使用 `v-on:keyup.f1`
+ Vue.config.keyCodes.f1 = 112
+```
+
+**系统修饰键**
+
+可以用如下修饰符来实现仅在按下相应按键时才出发
 
 
 
@@ -895,15 +1064,24 @@ methods: {
 
 
 1. 文本
+  ```js
+  <input v-model="message" placeholder="edit me">
+  <p>Message is: {{ message }}</p>
+  ```
 2. 多行文本
+  ```js
+  <span>Multiline message is:</span>
+  <p style="white-space: pre-line;">{{ message }}</p>
+  <br>
+  <textarea v-model="message" placeholder="add multiple lines"></textarea>
+  ```
 3. 复选框
     单个复选框, 绑定到布尔值
-
     ```js
     <input type="checkbox" id="checkbox" v-model="checked">
     <label for="checkbox">{{ checked }}</label>
     ```
-    多个复选框,绑定到同一个数组
+    多个复选框,绑定到同一个数组, 绑定的 value 值
 
     ```js
     <input type="checkbox" id="jack" value="Jack" v-model="checkedNames">
@@ -924,7 +1102,7 @@ methods: {
     })
 
     ```
-  4. 单选按钮
+4. 单选按钮
   ```js
   <div id="example-4">
     <input type="radio" id="one" value="One" v-model="picked">
@@ -1023,22 +1201,50 @@ new Vue({
 ```
 
 **值绑定**
+ 1. 对于单选按钮,复选框及选择框的选项, v-model 绑定的值通常是静态字符串(对于复选框也可以是布尔值):
+  ```js
+  <!-- 当选中时，`picked` 为字符串 "a" -->
+  <input type="radio" v-model="picked" value="a">
 
+  <!-- `toggle` 为 true 或 false -->
+  <input type="checkbox" v-model="toggle">
 
+  <!-- 当选中第一个选项时，`selected` 为字符串 "abc" -->
+  <select v-model="selected">
+    <option value="abc">ABC</option>
+  </select>
+  ```
+  2. <input type="radio" v-model="pick" v-bind:value="a">
+    ```js
+    // 当选中时
+    vm.pick === vm.a
+    ```
+  3. 选择框的选项
+   ```js
+    <select v-model="selected">
+    <!-- 内联对象字面量 -->
+      <option v-bind:value="{ number: 123 }">123</option>
+   </select>
+  ```
+  ```js
+    // 当选中时
+    typeof vm.selected // => 'object'
+    vm.selected.number // => 123
+  ```
 **修饰符**
 1. .lazy
   在默认情况下, v-model 在每次 input 事件触发后将输入框的值与数据进行同步(除了上述输入法组合文字时). 你可以添加 lazy 修饰符,从而转为在 change 事件之后进行同步
   > input 输入框的 onchange 事件,要在 input 市区焦点的时候才会触发;
   在输入框内容变化的时候不会触发 change, 当鼠标在其他地方点一下才会触发
   onchange 事件也可用于单选框与复选卡改变后触发的事件
-2. .number
+1. .number
    如果想自动将用户的输入值转为数值类型,可以给 v-model 添加 number 修饰符 :
 
    ```js
     <input v-model.number="age" type="number">
 
    ```
-3. .trim
+2. .trim
    如果要自动过滤用户输入的首尾空白字符, 可以给 v-model 添加trim 修饰符
 
 ```js
@@ -1069,7 +1275,7 @@ Vue.component('button-counter', {
   template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
 })
 ```
-组件是可复用的 Vue 实例，且带有一个名字：在这个例子中是 <button-counter>。我们可以在一个通过 new Vue 创建的 Vue 根实例中，把这个组件作为自定义元素来使用：
+组件是可复用的 Vue 实例，且带有一个名字：在这个例子中是 button-counter。我们可以在一个通过 new Vue 创建的 Vue 根实例中，把这个组件作为自定义元素来使用：
 
 ```js
 <div id="components-demo">
