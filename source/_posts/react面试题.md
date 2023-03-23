@@ -189,3 +189,15 @@ Portals 是 React 16 提供的官方解决方案,使得组件可以脱离父组�
 
 
 ## 3. 组件通信
+
+setState 是同步还是异步?
+class 组件生命周期有哪些?
+重复调用 setState 会发生什么?
+什么是 fiber 架构?
+调和算法具体干什么的?
+key 有什么作用,可以省略吗?
+useState()如何实现数据持久化?
+useEffect()会有内存泄漏吗?
+useEffect(function, deps)中第二个参数表示依赖项, 如何实现依赖项的对比?
+什么是可中断渲染?
+context 有什么作用?

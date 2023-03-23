@@ -10,6 +10,7 @@ tags:
 Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不同的是，Vue 被设计为可以自底向上逐层应用。Vue 的核心库只关注视图层，不仅易于上手，还便于与第三方库或既有项目整合。另一方面，当与现代化的工具链以及各种支持类库结合使用时，Vue 也完全能够为复杂的单页应用提供驱动。
 
 **声明式渲染**
+渲染氛围生命式渲染和命令式渲染
 **条件与循环**
 **处理用户输入**
 
@@ -45,7 +46,7 @@ Vue 是一套用于构建用户界面的渐进式框架,与其它大型框架不
 
 **什么是生命周期**
 
-每个 Vue 实例在被创建时都要经过一系列的初始化过程--例如,需要设置数据监听,编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等, 同时在这个过程中也会运行一些叫做神功周期钩子的函数, 这给了用户在不同阶段添加自己的代码的机会.
+每个 Vue 实例在被创建时都要经过一系列的初始化过程--例如,需要设置数据监听,编译模版, 将实例挂载到 DOM 并在数据变化时更新 DOM 等, 同时在这个过程中也会运行一些叫做生命周期钩子的函数, 这给了用户在不同阶段添加自己的代码的机会.
 
 Vue中生命周期, 一共分为四大类, 分别是实例期,挂载期, 更新期, 销毁期, 每个周期飞卫当前周期前后. 其实简单点来说生命周期跟我们人的一生也挺相似的. 
 
@@ -2916,7 +2917,189 @@ methods: {
 提供一个在页面上已存在的 DOM 元素作为 Vue实例的挂载目标(挂载的意思就是 Vue 实例与页面发生关系),可以是 css 选择器, 也可以是一个 HTMLElement 实例
 
 
+### Vue 中 模版生成 ast, ast 生成 render 函数 , render 函数的样式如下
+```js
+var render = function () {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c(
+    "div",
+    [
+      _c(
+        "vab-query-form",
+        [
+          _c(
+            "vab-query-form-left-panel",
+            { attrs: { span: 24 } },
+            [
+              _c(
+                "el-form",
+                {
+                  ref: "form",
+                  attrs: { model: _vm.queryForm, inline: true },
+                  nativeOn: {
+                    submit: function ($event) {
+                      $event.preventDefault()
+                    },
+                  },
+                },
+                [
+                  _c(
+                    "el-form-item",
+                    [
+                      _c("el-button", { attrs: { type: "primary" } }, [
+                        _vm._v(_vm._s(_vm.title)),
+                      ]),
+                    ],
+                    1
+                  ),
+                ],
+                1
+              ),
+            ],
+            1
+          ),
+        ],
+        1
+      ),
+      _c(
+        "el-table",
+        {
+          directives: [
+            {
+              name: "loading",
+              rawName: "v-loading",
+              value: _vm.listLoading,
+              expression: "listLoading",
+            },
+          ],
+          ref: "tableSort",
+          staticClass: "base-table",
+          attrs: {
+            height: _vm.height,
+            data: _vm.list,
+            "element-loading-text": _vm.elementLoadingText,
+          },
+          on: { "sort-change": _vm.tableSortChange },
+        },
+        [
+          _c("el-table-column", {
+            attrs: { "show-overflow-tooltip": "", label: "序号", width: "60" },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function (scope) {
+                  return [
+                    _vm._v(
+                      " " +
+                        _vm._s(
+                          _vm.queryForm.page_size *
+                            (_vm.queryForm.curr_page - 1) +
+                            scope.$index +
+                            1
+                        ) +
+                        " "
+                    ),
+                  ]
+                },
+              },
+            ]),
+          }),
+          _c("el-table-column", {
+            attrs: {
+              "show-overflow-tooltip": "",
+              prop: "id_task",
+              label: "任务编号",
+              width: "180",
+              sortable: "",
+            },
+          }),
+          _c("el-table-column", {
+            attrs: {
+              "show-overflow-tooltip": "",
+              prop:
+                _vm.title == "queued_task" ? "create_timestamp" : "active_task",
+              label: "创建时间",
+              width: "160",
+              sortable: "",
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function (scope) {
+                  return [
+                    _vm._v(
+                      " " +
+                        _vm._s(
+                          _vm.formatCreateTime(scope.row.create_timestamp)
+                        ) +
+                        " "
+                    ),
+                  ]
+                },
+              },
+            ]),
+          }),
+          _c("el-table-column", {
+            attrs: {
+              "show-overflow-tooltip": "",
+              label: "任务时间（s）",
+              prop: "fetch_timestamp",
+              width: "120",
+            },
+            scopedSlots: _vm._u([
+              {
+                key: "default",
+                fn: function (ref) {
+                  var row = ref.row
+                  return [
+                    row.fetch_timestamp
+                      ? _c("span", [
+                          _vm._v(
+                            " " +
+                              _vm._s(
+                                (row.fetch_timestamp / 1000000000).toFixed(2)
+                              ) +
+                              " "
+                          ),
+                        ])
+                      : _vm._e(),
+                  ]
+                },
+              },
+            ]),
+          }),
+          _c("el-table-column", {
+            attrs: {
+              "show-overflow-tooltip": "",
+              label: "用户ID",
+              prop: "user_id",
+              width: "180",
+              sortable: "",
+            },
+          }),
+          _c("el-table-column", {
+            attrs: {
+              "show-overflow-tooltip": "",
+              label: "APP_ID",
+              prop: "app_id",
+              width: "180",
+              sortable: "",
+            },
+          }),
+        ],
+        1
+      ),
+    ],
+    1
+  )
+}
+var staticRenderFns = []
+render._withStripped = true
 
+export { render, staticRenderFns }
+```
 
 
 

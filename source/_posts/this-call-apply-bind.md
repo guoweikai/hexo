@@ -17,10 +17,17 @@ this 是执行上文的一个属性,它指向了最后一次调用这个方法�
 
 这四种方式，使用构造器调用模式的优先级最高，然后是 apply、call 和 bind 调用模式，然后是方法调用模式，然后是函数调用模式。
 
-### 2. call() 和 apply() 的区别？
+### 2. call() 和 apply()？
 它们的作用一模一样,
 * apply 接受两个参数，第一个参数指定了函数体内 this 对象的指向，第二个参数为一个带下标的集合，这个集合可以为数组，也可以为类数组，apply 方法把这个集合中的元素作为参数传递给被调用的函数。
 * call 传入的参数数量不固定，跟 apply 相同的是，第一个参数也是代表函数体内的 this 指向，从第二个参数开始往后，每个参数被依次传入函数。
+
+### 3. call , apply  和 bind 的区别
+
+* call apply 
+
+
+
 ### 3. 实现call、apply 及 bind 函数
 (1) call 函数的实现步骤
 * 判断调用对象是否是函数,但是可能出现使用 call 等方式调用的情况。
@@ -30,7 +37,6 @@ this 是执行上文的一个属性,它指向了最后一次调用这个方法�
 * 使用上下文对象调用这个方法,并保存返回结果
 * 删除刚才新增的属性。
 * 返回结果。
-
 
 ```js
 
@@ -42,6 +48,7 @@ Function.prototype.myCall = function(context){
     result = null;
     context = context || window  比 if 的那种写法好多了
     context.fn = this;
+    // 调用 this
     result =   context.fn(...args)
     delete context.fn 
     return restul 
@@ -54,6 +61,15 @@ Function.prototype.myCall = function(context){
 
 
 (3) bind 的实现步骤
+
+```js
+Function.prototype.myBind = function (context) {
+    var fn = this;
+
+}
+
+```
+
 
 
 问题: 
@@ -118,6 +134,9 @@ a.b.bind({c:1})()
 // 错误使用
 a.b.bind({c:1})
 a.b()
+// 可以这样使用
+let b  = a.b.bind({})
+b()
 //bind方法 fn.bind(thisArg,arg1,arg2...)
 //不会调用
 //返回的是原函数改变this之后产生的新函数
