@@ -4,12 +4,13 @@ date: 2022-09-06 14:54:29
 tags:
 ---
 ### 1. 什么是React?(谁开发的, 主要作用,特点是什么)
-  React 是一个由 Facebook 开发和维护的 JavaScript 库，用于构建用户界面。React 的主要特点是使用组件化和虚拟 DOM 的方式来使 UI 代码更加模块化、可维护和可重用。它使用 JSX 语法来描述组件的外观和行为，并使用 JavaScript 来控制其渲染和交互。React 通常与其他技术，如 Redux、GraphQL 和 React Native 等一起使用，以构建完整的 Web 应用程序、移动应用程序和其他类型的应用程序。React 也具有活跃的社区和生态系统，提供了许多有用的工具、库和插件，以支持 React 应用程序的开发和维护。
+  React 是一个由 Facebook 开发和维护的 JavaScript 库，用于构建用户界面。React 的主要特点是使用组件化和虚拟 DOM 的方式来使 UI 代码更加模块化、可维护和可重用。它使用 JSX 语法来描述组件的外观和行为，并使用 JavaScript 来控制其渲染和交互。
 
 ### 2. jsx (jsx 是什么, 如何使用, 使用时注意什么,解决了什么问题)
 
   1. jsx是什么?
     JSX 是一种 JavaScript 的语法扩展，用于描述 React 组件的 UI 层。它允许开发人员在 JavaScript 代码中编写 HTML 类似的结构和样式，使得组件的编写更加直观和易于维护。在 JSX 中，开发人员可以使用类似 HTML 的标记来描述组件的结构和内容，同时也可以在标记中嵌入 JavaScript 表达式来实现动态的 UI 效果
+
   2. jsx 会生成 ast 吗
     是的，JSX 代码会被转换为 AST（抽象语法树），然后再转换为普通的 JavaScript 代码。React 编译器会将 JSX 代码解析成一个 AST，然后将 AST 转换成 JavaScript 代码。
     在 React 中，使用 Babel 编译器来转换 JSX 代码。Babel 是一个用于将新版 JavaScript 转换成向后兼容的代码的工具。它可以将 JSX 代码转换成常规的 JavaScript 代码，并将其打包成浏览器可以执行的 JavaScript 文件
@@ -278,3 +279,5 @@ React 组件和虚拟 DOM 之间是紧密相关的，可以说虚拟 DOM 是 Rea
 ### react 的全家桶?
 
 ### React 和 Vue 渲染流程的区别?
+
+### 将内容思维导图
